@@ -62,7 +62,8 @@ public class MangaDex {
     }
 
     @GetMapping("/mangaById")
-    public String fetchMangaById(@RequestParam(value = "limit", required = true) String limit, @RequestParam(value = "mangaId", required = true) String mangaId) {
+    public String fetchMangaById(@RequestParam(value = "limit", required = true) String limit,
+            @RequestParam(value = "mangaId", required = true) String mangaId) {
         String externalApiUrl = "https://api.mangadex.org/manga/" + mangaId;
         // Create HttpHeaders and set the User-Agent header
         HttpHeaders headers = new HttpHeaders();
@@ -76,7 +77,10 @@ public class MangaDex {
     }
 
     @GetMapping("/mangaByTitle")
-    public String fetchMangaByTitle(@RequestParam(value = "limit", required = true) String limit, @RequestParam(value = "title", required = true) String title) {
+    public String fetchMangaByTitle(@RequestParam(value = "limit", required = true) String limit,
+            @RequestParam(value = "title", required = true) String title,
+            @RequestParam(value = "order", required = true) String order,
+            @RequestParam(value = "filter", required = true) String filter) {
         String externalApiUrl = "https://api.mangadex.org/manga/?limit=" + limit + "&title=" + title;
         // Create HttpHeaders and set the User-Agent header
         HttpHeaders headers = new HttpHeaders();
@@ -90,7 +94,8 @@ public class MangaDex {
     }
 
     @GetMapping("/mangaByTag")
-    public String fetchMangaByTag(@RequestParam(value = "limit", required = true) String limit, @RequestParam(value = "tagId", required = true) String tagId) {
+    public String fetchMangaByTag(@RequestParam(value = "limit", required = true) String limit,
+            @RequestParam(value = "tagId", required = true) String tagId) {
         String externalApiUrl = "https://api.mangadex.org/manga/?limit=" + limit + "&order[relevance]=desc";
         // Create HttpHeaders and set the User-Agent header
         HttpHeaders headers = new HttpHeaders();
