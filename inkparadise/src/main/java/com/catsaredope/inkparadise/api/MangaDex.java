@@ -16,8 +16,9 @@ import java.net.URI;
 @RequestMapping("/mangaDex")
 public class MangaDex {
     @Autowired
-    private RestTemplate restTemplate;
+     private RestTemplate restTemplate = new RestTemplate();
 
+    @CrossOrigin
     @GetMapping("/recentlyUpdated")
     public String fetchRecentlyUpdated(@RequestParam(value = "limit", required = true) String limit) {
         String externalApiUrl = "https://api.mangadex.org/manga?limit=" + limit + "&order[latestUploadedChapter]=desc";
