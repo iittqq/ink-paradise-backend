@@ -14,12 +14,12 @@ import org.springframework.web.client.RestTemplate;
 import java.net.URI;
 
 @RestController
+@CrossOrigin
 @RequestMapping("/manga-dex")
 public class MangaDex {
 	@Autowired
 	private RestTemplate restTemplate = new RestTemplate();
 
-	@CrossOrigin
 	@GetMapping("/recently-updated")
 	public String fetchRecentlyUpdated(@RequestParam(value = "limit", required = true) Number limit) {
 		String externalApiUrl = "https://api.mangadex.org/manga?limit=" + limit + "&order[latestUploadedChapter]=desc";
@@ -66,8 +66,8 @@ public class MangaDex {
 	}
 
 	@GetMapping("/manga-by-id")
-	public String fetchMangaById(@RequestParam(value = "mangaId", required = true) String mangaId) {
-		String externalApiUrl = "https://api.mangadex.org/manga/" + mangaId;
+	public String fetchMangaById(@RequestParam(value = "id", required = true) String id) {
+		String externalApiUrl = "https://api.mangadex.org/manga/" + id;
 		// Create HttpHeaders and set the User-Agent header
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("User-Agent", "ink-paradise");
@@ -129,7 +129,7 @@ public class MangaDex {
 	public String fetchMangaFeed(@RequestParam(value = "id", required = true) String id,
 			@RequestParam(value = "limit", required = true) Number limit,
 			@RequestParam(value = "offset", required = true) Number offset,
-			@RequestParam(value = "translated-language", required = true) String translatedLanguage,
+			@RequestParam(value = "translatedLanguage", required = true) String translatedLanguage,
 			@RequestParam(value = "order", required = true) String order) {
 		String externalApiUrl = "https://api.mangadex.org/manga/" + id + "/feed?limit=" + limit + "&offset=" + offset
 				+ "&translatedLanguage[]=" + translatedLanguage + "&order[chapter]=" + order;
