@@ -36,8 +36,10 @@ public class MangaDex {
 	}
 
 	@GetMapping("/recently-added")
-	public String fetchRecentlyAdded(@RequestParam(value = "limit", required = true) String limit) {
-		String externalApiUrl = "https://api.mangadex.org/manga?limit=" + limit + "&order[createdAt]=desc";
+	public String fetchRecentlyAdded(@RequestParam(value = "limit", required = true) String limit,
+			@RequestParam(value = "offset", required = true) Number offset) {
+		String externalApiUrl = "https://api.mangadex.org/manga?limit=" + limit + " + &offset=" + offset
+				+ "&order[createdAt]=desc";
 		// Create HttpHeaders and set the User-Agent header
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("User-Agent", "ink-paradise");
