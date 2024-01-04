@@ -21,7 +21,7 @@ public class MangaDex {
 
 	@CrossOrigin
 	@GetMapping("/recently-updated")
-	public String fetchRecentlyUpdated(@RequestParam(value = "limit", required = true) String limit) {
+	public String fetchRecentlyUpdated(@RequestParam(value = "limit", required = true) Number limit) {
 		String externalApiUrl = "https://api.mangadex.org/manga?limit=" + limit + "&order[latestUploadedChapter]=desc";
 
 		// Create HttpHeaders and set the User-Agent header
@@ -36,9 +36,9 @@ public class MangaDex {
 	}
 
 	@GetMapping("/recently-added")
-	public String fetchRecentlyAdded(@RequestParam(value = "limit", required = true) String limit,
-			@RequestParam(value = "offset", required = true) Number offset) {
-		String externalApiUrl = "https://api.mangadex.org/manga?limit=" + limit + " + &offset=" + offset
+	public String fetchRecentlyAdded(@RequestParam(value = "limit", required = true) Number limit,
+			@RequestParam(value = "offset", required = false) Number offset) {
+		String externalApiUrl = "https://api.mangadex.org/manga?limit=" + limit + "&offset=" + offset
 				+ "&order[createdAt]=desc";
 		// Create HttpHeaders and set the User-Agent header
 		HttpHeaders headers = new HttpHeaders();
@@ -80,7 +80,7 @@ public class MangaDex {
 	}
 
 	@GetMapping("/manga-by-title")
-	public String fetchMangaByTitle(@RequestParam(value = "limit", required = true) String limit,
+	public String fetchMangaByTitle(@RequestParam(value = "limit", required = true) Number limit,
 			@RequestParam(value = "title", required = true) String title) {
 		String externalApiUrl = "https://api.mangadex.org/manga/?limit=" + limit + "&title=" + title
 				+ "&order[relevance]=desc";
@@ -96,7 +96,7 @@ public class MangaDex {
 	}
 
 	@GetMapping("/manga-by-tag")
-	public String fetchMangaByTag(@RequestParam(value = "limit", required = true) String limit,
+	public String fetchMangaByTag(@RequestParam(value = "limit", required = true) Number limit,
 			@RequestParam(value = "id", required = true) String id) {
 		String externalApiUrl = "https://api.mangadex.org/manga/?limit=" + limit + "&includedTags[]=" + id
 				+ "&order[relevance]=desc";
