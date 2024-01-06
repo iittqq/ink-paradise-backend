@@ -82,7 +82,8 @@ public class MangaDex {
 	@GetMapping("/manga-by-title")
 	public String fetchMangaByTitle(@RequestParam(value = "limit", required = true) Number limit,
 			@RequestParam(value = "title", required = true) String title) {
-		String externalApiUrl = "https://api.mangadex.org/manga/?limit=" + limit + "&title=" + title
+		String externalApiUrl = "https://api.mangadex.org/manga/?limit=" + limit + "&title="
+				+ title.replaceAll(" ", "+")
 				+ "&order[relevance]=desc";
 		// Create HttpHeaders and set the User-Agent header
 		HttpHeaders headers = new HttpHeaders();
