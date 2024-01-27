@@ -3,22 +3,22 @@ package com.catsaredope.inkparadise.Models;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "account")
+@Table(name = "user_account", schema = "ink_paradise")
 public class Account {
     private long id;
     private String email;
     private String password;
-    private String userName;
+    private String username;
     private int contentFilter;
 
     public Account() {
     }
 
-    public Account(long id, String email, String password, String userName, int contentFilter) {
+    public Account(long id, String email, String password, String username, int contentFilter) {
         this.id = id;
         this.email = email;
         this.password = password;
-        this.userName = userName;
+        this.username = username;
         this.contentFilter = contentFilter;
     }
 
@@ -52,14 +52,14 @@ public class Account {
 
     @Column(name = "username", nullable = false, length = 50)
     public String getUserName() {
-        return userName;
+        return username;
     }
 
     public void setUserName(String newUserName) {
-        this.userName = newUserName;
+        this.username = newUserName;
     }
 
-    @Column(name = "contentfilter", nullable = false)
+    @Column(name = "contentFilter", nullable = false)
     public int getContentFilter() {
         return contentFilter;
     }

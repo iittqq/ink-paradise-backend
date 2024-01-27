@@ -42,15 +42,18 @@ public class AccountController {
         return ResponseEntity.ok().body(account);
     }
 
-    @PostMapping("/accounts")
+    @PostMapping("/accounts/new")
     public Account createAccount(@Valid @RequestBody Account account) {
+        System.out.println(account.getEmail());
+        System.out.println(account.getPassword());
+        System.out.println(account.getUserName());
         if (account.getEmail() == null || account.getPassword() == null || account.getUserName() == null) {
             throw new IllegalArgumentException("Account email, password, and username cannot be null");
         }
         return accountRepository.save(account);
     }
 
-    @PutMapping("/accounts/{id}")
+    @PutMapping("/accounts/update/{id}")
     public ResponseEntity<Account> updateAccount(@PathVariable(value = "id") Long accountId,
             @Valid @RequestBody Account accountDetails) throws Exception {
         if (accountId == null) {
@@ -67,7 +70,7 @@ public class AccountController {
         return ResponseEntity.ok(updatedAccount);
     }
 
-    @DeleteMapping("/accounts/{id}")
+    @DeleteMapping("/accounts/remove/{id}")
     public Map<String, Boolean> deleteAccount(@PathVariable(value = "id") Long accountId) throws Exception {
         if (accountId == null) {
             throw new IllegalArgumentException("Account id cannot be null");
