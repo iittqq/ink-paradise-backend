@@ -13,10 +13,10 @@ public class CorsConfig {
         return new WebMvcConfigurer() {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
-                registry.addMapping("/MangaDex/**")  // Define the specific endpoints you want to allow CORS for
-                        .allowedOrigins("*") // Allow requests from any origin (you can restrict this to specific origins)
-                        .allowedMethods("GET", "POST", "PUT", "DELETE")  // Define allowed HTTP methods
-                        .allowedHeaders("*");  // Define allowed request headers
+                registry.addMapping("/**")
+                        .allowedOrigins("http://localhost:5173") // Replace with your React frontend URL
+                        .allowedMethods("GET", "POST", "PUT", "DELETE")
+                        .allowCredentials(true);
             }
         };
     }
