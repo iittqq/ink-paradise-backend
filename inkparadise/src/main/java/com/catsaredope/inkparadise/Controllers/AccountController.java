@@ -44,10 +44,7 @@ public class AccountController {
 
     @PostMapping("/accounts/new")
     public Account createAccount(@Valid @RequestBody Account account) {
-        System.out.println(account.getEmail());
-        System.out.println(account.getPassword());
-        System.out.println(account.getUserName());
-        if (account.getEmail() == null || account.getPassword() == null || account.getUserName() == null) {
+        if (account.getEmail() == null || account.getPassword() == null) {
             throw new IllegalArgumentException("Account email, password, and username cannot be null");
         }
         return accountRepository.save(account);
@@ -64,7 +61,7 @@ public class AccountController {
 
         account.setEmail(accountDetails.getEmail());
         account.setPassword(accountDetails.getPassword());
-        account.setUserName(accountDetails.getUserName());
+        account.setUsername(accountDetails.getUsername());
         account.setContentFilter(accountDetails.getContentFilter());
         final Account updatedAccount = accountRepository.save(account);
         return ResponseEntity.ok(updatedAccount);

@@ -50,12 +50,12 @@ public class Account {
         this.password = newPassword;
     }
 
-    @Column(name = "username", nullable = false, length = 50)
-    public String getUserName() {
+    @Column(name = "username", nullable = true, length = 50)
+    public String getUsername() {
         return username;
     }
 
-    public void setUserName(String newUserName) {
+    public void setUsername(String newUserName) {
         this.username = newUserName;
     }
 
