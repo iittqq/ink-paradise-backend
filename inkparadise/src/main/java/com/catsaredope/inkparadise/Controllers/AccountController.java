@@ -24,65 +24,75 @@ import com.catsaredope.inkparadise.Repositories.AccountRepository;
 @RestController
 @RequestMapping("/api/v1")
 public class AccountController {
-    @Autowired
-    private AccountRepository accountRepository;
+	@Autowired
+	private AccountRepository accountRepository;
 
-    @GetMapping("/accounts")
-    public List<Account> getAllAccounts() {
-        return accountRepository.findAll();
-    }
+	@GetMapping("/accounts")
+	public List<Account> getAllAccounts() {
+		return accountRepository.findAll();
+	}
 
-    @GetMapping("/accounts/{id}")
-    public ResponseEntity<Account> getAccountById(@PathVariable(value = "id") Long accountId) throws Exception {
-        if (accountId == null) {
-            throw new IllegalArgumentException("Account id cannot be null");
-        }
-        Account account = accountRepository.findById(accountId)
-                .orElseThrow(() -> new Exception("Account not found for this id :: " + accountId));
-        return ResponseEntity.ok().body(account);
-    }
+	@GetMapping("/accounts/{id}")
+	public ResponseEntity<Account> getAccountById(@PathVariable(value = "id") Long accountId) throws Exception {
+		if (accountId == null) {
+			throw new IllegalArgumentException("Account id cannot be null");
+		}
+		Account account = accountRepository.findById(accountId)
+				.orElseThrow(() -> new Exception("Account not found for this id :: " + accountId));
+		return ResponseEntity.ok().body(account);
+	}
 
-    @PostMapping("/accounts/new")
-    public Account createAccount(@Valid @RequestBody Account account) {
-        if (account.getEmail() == null || account.getPassword() == null) {
-            throw new IllegalArgumentException("Account email, password, and username cannot be null");
-        }
-        return accountRepository.save(account);
-    }
+	@PostMapping("/accounts/new")
+	public Account createAccount(@Valid @RequestBody Account account) {
+		if (account.getEmail() == null || account.getPassword() == null) {
+			throw new IllegalArgumentException("Account email, password, and username cannot be null");
+		}
+		return accountRepository.save(account);
+	}
 
-    @PutMapping("/accounts/update/{id}")
-    public ResponseEntity<Account> updateAccount(@PathVariable(value = "id") Long accountId,
-            @Valid @RequestBody Account accountDetails) throws Exception {
-        if (accountId == null) {
-            throw new IllegalArgumentException("Account id cannot be null");
-        }
-        Account account = accountRepository.findById(accountId)
-                .orElseThrow(() -> new Exception("Account not found for this id :: " + accountId));
+	@GetMapping("/accounts/login/{account}")
+	public ResponseEntity<Account> getAccountByEmailAndPassword(@PathVariable(value = "account") Account account)
+			throws Exception {
+		Account accountResponse = accountRepository.findByEmailAndPassword(account);
+		if (accountResponse == null) {
+			throw new IllegalArgumentException("Account not found for email and password");
+		}
+		return ResponseEntity.ok().body(accountResponse);
+	}
 
-        account.setEmail(accountDetails.getEmail());
-        account.setPassword(accountDetails.getPassword());
-        account.setUsername(accountDetails.getUsername());
-        account.setContentFilter(accountDetails.getContentFilter());
-        final Account updatedAccount = accountRepository.save(account);
-        return ResponseEntity.ok(updatedAccount);
-    }
+	@PutMapping("/accounts/update/{id}")
+	public ResponseEntity<Account> updateAccount(@PathVariable(value = "id") Long accountId,
+			@Valid @RequestBody Account accountDetails) throws Exception {
+		if (accountId == null) {
+			throw new IllegalArgumentException("Account id cannot be null");
+		}
+		Account account = accountRepository.findById(accountId)
+				.orElseThrow(() -> new Exception("Account not found for this id :: " + accountId));
 
-    @DeleteMapping("/accounts/remove/{id}")
-    public Map<String, Boolean> deleteAccount(@PathVariable(value = "id") Long accountId) throws Exception {
-        if (accountId == null) {
-            throw new IllegalArgumentException("Account id cannot be null");
-        }
-        Account account = accountRepository.findById(accountId)
-                .orElseThrow(() -> new Exception("Account not found for this id :: " + accountId));
+		account.setEmail(accountDetails.getEmail());
+		account.setPassword(accountDetails.getPassword());
+		account.setUsername(accountDetails.getUsername());
+		account.setContentFilter(accountDetails.getContentFilter());
+		final Account updatedAccount = accountRepository.save(account);
+		return ResponseEntity.ok(updatedAccount);
+	}
 
-        if (account == null) {
-            throw new IllegalArgumentException("Account cannot be null");
-        }
+	@DeleteMapping("/accounts/remove/{id}")
+	public Map<String, Boolean> deleteAccount(@PathVariable(value = "id") Long accountId) throws Exception {
+		if (accountId == null) {
+			throw new IllegalArgumentException("Account id cannot be null");
+		}
+		Account account = accountRepository.findById(accountId)
+				.orElseThrow(() -> new Exception("Account not found for this id :: " + accountId));
 
-        accountRepository.delete(account);
-        Map<String, Boolean> response = new HashMap<>();
-        response.put("deleted", Boolean.TRUE);
-        return response;
-    }
+		if (account == null) {
+			throw new IllegalArgumentException("Account cannot be null");
+		}
+
+		accountRepository.delete(account);
+		Map<String, Boolean> response = new HashMap<>();
+		response.put("deleted", Boolean.TRUE);
+		return response;
+	}
 
 }
