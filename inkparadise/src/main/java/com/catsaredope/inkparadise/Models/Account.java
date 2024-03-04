@@ -5,6 +5,8 @@ import jakarta.persistence.*;
 @Entity
 @Table(name = "user_account", schema = "ink_paradise")
 public class Account {
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long id;
 	private String email;
 	private String password;
@@ -27,8 +29,6 @@ public class Account {
 		this.contentFilter = contentFilter;
 	}
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	public long getId() {
 		return id;
 	}
