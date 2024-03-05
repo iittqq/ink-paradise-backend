@@ -11,6 +11,7 @@ public class MangaFolder {
 	private long folderId;
 	private long userId;
 	private String folderName;
+	private String folderDescription;
 
 	public MangaFolder() {
 	}
@@ -46,5 +47,14 @@ public class MangaFolder {
 
 	public void setFolderName(String newFolderName) {
 		this.folderName = newFolderName;
+	}
+
+	@Column(name = "folder_description", length = 100)
+	public String getFolderDescription() {
+		return folderDescription;
+	}
+
+	public void setFolderDescription(String newFolderDescription) {
+		this.folderDescription = newFolderDescription;
 	}
 }
