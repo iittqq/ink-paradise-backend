@@ -9,12 +9,12 @@ public class MangaFolderEntry {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long uniqueId;
 	private long folderId;
-	private long mangaId;
+	private String mangaId;
 
 	public MangaFolderEntry() {
 	}
 
-	public MangaFolderEntry(long unique_id, long folderId, long mangaId) {
+	public MangaFolderEntry(long unique_id, long folderId, String mangaId) {
 		this.uniqueId = unique_id;
 		this.folderId = folderId;
 		this.mangaId = mangaId;
@@ -35,11 +35,11 @@ public class MangaFolderEntry {
 	}
 
 	@Column(name = "manga_id", nullable = false)
-	public long getMangaId() {
+	public String getMangaId() {
 		return mangaId;
 	}
 
-	public void setMangaId(long newMangaId) {
+	public void setMangaId(String newMangaId) {
 		this.mangaId = newMangaId;
 	}
 }
