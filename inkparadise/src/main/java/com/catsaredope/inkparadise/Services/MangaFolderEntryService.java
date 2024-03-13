@@ -14,4 +14,8 @@ public class MangaFolderEntryService {
 	public List<MangaFolderEntry> findAccountByEmailAndPassword(Long id) {
 		return mangaFolderEntryRepository.findByFolderId(id);
 	}
+
+	public void deleteByFolderId(Long folderId) {
+		mangaFolderEntryRepository.deleteByFolderId(folderId);
+	}
 }

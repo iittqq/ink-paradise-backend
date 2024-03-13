@@ -88,4 +88,18 @@ public class MangaFolderEntryController {
 		}
 		return mangaFolderEntryRepository.findByFolderId(id);
 	}
+
+	@DeleteMapping("/manga_folder_entries/delete_by_folder_id/{id}")
+	public ResponseEntity<Map<String, Boolean>> deleteMangaFolderEntryByFolderId(@PathVariable Long id) {
+		if (id == null) {
+			throw new IllegalArgumentException("Manga folder entry folder id cannot be null");
+		}
+		try {
+			mangaFolderEntryRepository.deleteByFolderId(id);
+			return ResponseEntity.ok().body(null);
+		} catch (Exception e) {
+			throw new IllegalArgumentException("Manga folder entry not found for this folder id :: " + id);
+		}
+
+	}
 }
