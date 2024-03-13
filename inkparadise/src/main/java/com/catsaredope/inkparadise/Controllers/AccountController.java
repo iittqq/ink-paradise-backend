@@ -20,6 +20,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.catsaredope.inkparadise.Models.Account;
 import com.catsaredope.inkparadise.Repositories.AccountRepository;
+import com.catsaredope.inkparadise.Services.AccountService;
+import com.catsaredope.inkparadise.Models.LoginRequest;
 
 @RestController
 @RequestMapping("/api/v1")
@@ -50,14 +52,15 @@ public class AccountController {
 		return accountRepository.save(account);
 	}
 
-	@GetMapping("/accounts/login/{account}")
-	public ResponseEntity<Account> getAccountByEmailAndPassword(@PathVariable(value = "account") Account account)
-			throws Exception {
-		Account accountResponse = accountRepository.findByEmailAndPassword(account);
-		if (accountResponse == null) {
-			throw new IllegalArgumentException("Account not found for email and password");
-		}
-		return ResponseEntity.ok().body(accountResponse);
+	@Autowired
+	private AccountService accountService;
+
+	@PostMapping("/accounts/login")
+	public Account login(@RequestBody LoginRequest loginRequest) {
+		String email = loginRequest.getEmail();
+		String password = loginRequest.getPassword();
+
+		return accountService.findAccountByEmailAndPassword(email, password);
 	}
 
 	@PutMapping("/accounts/update/{id}")

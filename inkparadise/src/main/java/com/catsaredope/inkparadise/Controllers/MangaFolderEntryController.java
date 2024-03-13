@@ -81,4 +81,11 @@ public class MangaFolderEntryController {
 		return response;
 	}
 
+	@GetMapping("/manga_folder_entries/find_by_folder_id/{id}")
+	public List<MangaFolderEntry> findMangaFolderEntryByFolderId(@PathVariable Long id) {
+		if (id == null) {
+			throw new IllegalArgumentException("Manga folder entry folder id cannot be null");
+		}
+		return mangaFolderEntryRepository.findByFolderId(id);
+	}
 }
