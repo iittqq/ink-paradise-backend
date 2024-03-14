@@ -17,4 +17,5 @@ public class MangaFolderEntryRepositoryImpl implements MangaFolderEntryRepositor
 				.setParameter("folderId", folderId)
 				.executeUpdate();
 	}
+
 }

@@ -18,4 +18,5 @@ public class MangaFolderEntryService {
 	public void deleteByFolderId(Long folderId) {
 		mangaFolderEntryRepository.deleteByFolderId(folderId);
 	}
+
 }
