@@ -3,7 +3,7 @@ package com.catsaredope.inkparadise.Models;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "user_account", schema = "ink_paradise")
+@Table(name = "userAccount", schema = "inkParadise")
 public class Account {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -32,13 +32,13 @@ public class MangaFolderController {
 	}
 
 	@GetMapping("/manga_folders/{id}")
-	public ResponseEntity<MangaFolder> getMangaFolderById(@PathVariable(value = "id") Long mangaFolderId)
+	public ResponseEntity<MangaFolder> getMangaFolderById(@PathVariable(value = "folderId") Long folderId)
 			throws Exception {
-		if (mangaFolderId == null) {
+		if (folderId == null) {
 			throw new IllegalArgumentException("Manga folder id cannot be null");
 		}
-		MangaFolder mangaFolder = mangaFolderRepository.findById(mangaFolderId)
-				.orElseThrow(() -> new Exception("Manga folder not found for this id :: " + mangaFolderId));
+		MangaFolder mangaFolder = mangaFolderRepository.findById(folderId)
+				.orElseThrow(() -> new Exception("Manga folder not found for this id :: " + folderId));
 		return ResponseEntity.ok().body(mangaFolder);
 	}
 
@@ -50,14 +50,14 @@ public class MangaFolderController {
 		return mangaFolderRepository.save(mangaFolder);
 	}
 
-	@PutMapping("/manga_folders/update/{id}")
-	public ResponseEntity<MangaFolder> updateMangaFolder(@PathVariable(value = "id") Long mangaFolderId,
+	@PutMapping("/manga_folders/update/{folderId}")
+	public ResponseEntity<MangaFolder> updateMangaFolder(@PathVariable(value = "folderId") Long folderId,
 			@Valid @RequestBody MangaFolder mangaFolderDetails) throws Exception {
-		if (mangaFolderId == null) {
+		if (folderId == null) {
 			throw new IllegalArgumentException("Manga folder id cannot be null");
 		}
-		MangaFolder mangaFolder = mangaFolderRepository.findById(mangaFolderId)
-				.orElseThrow(() -> new Exception("Manga folder not found for this id :: " + mangaFolderId));
+		MangaFolder mangaFolder = mangaFolderRepository.findById(folderId)
+				.orElseThrow(() -> new Exception("Manga folder not found for this id :: " + folderId));
 		mangaFolder.setUserId(mangaFolderDetails.getUserId());
 		mangaFolder.setFolderName(mangaFolderDetails.getFolderName());
 		mangaFolder.setFolderDescription(mangaFolderDetails.getFolderDescription());
@@ -66,16 +66,16 @@ public class MangaFolderController {
 		return ResponseEntity.ok(updatedMangaFolder);
 	}
 
-	@DeleteMapping("/manga_folders/delete/{id}")
-	public Map<String, Boolean> deleteMangaFolder(@PathVariable(value = "id") Long mangaFolderId) throws Exception {
-		if (mangaFolderId == null) {
+	@DeleteMapping("/manga_folders/delete/{folderId}")
+	public Map<String, Boolean> deleteMangaFolder(@PathVariable(value = "folderId") Long folderId) throws Exception {
+		if (folderId == null) {
 			throw new IllegalArgumentException("Manga folder id cannot be null");
 		}
-		MangaFolder mangaFolder = mangaFolderRepository.findById(mangaFolderId)
-				.orElseThrow(() -> new Exception("Manga folder not found for this id :: " + mangaFolderId));
+		MangaFolder mangaFolder = mangaFolderRepository.findById(folderId)
+				.orElseThrow(() -> new Exception("Manga folder not found for this id :: " + folderId));
 
 		if (mangaFolder == null) {
-			throw new Exception("Manga folder not found for this id :: " + mangaFolderId);
+			throw new Exception("Manga folder not found for this id :: " + folderId);
 		}
 		mangaFolderRepository.delete(mangaFolder);
 		Map<String, Boolean> response = new HashMap<>();

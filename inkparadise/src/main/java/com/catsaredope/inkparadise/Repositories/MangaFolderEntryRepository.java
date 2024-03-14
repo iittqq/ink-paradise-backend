@@ -12,9 +12,15 @@ import java.util.List;
 @Repository
 public interface MangaFolderEntryRepository
 		extends JpaRepository<MangaFolderEntry, Long>, MangaFolderEntryRepositoryCustom {
-	@Query("select f from MangaFolderEntry f where f.folder_id = ?1")
-	List<MangaFolderEntry> findByFolderId(@Param("id") Long id);
+	@Query("select f from MangaFolderEntry f where f.folderId = :folderId")
+	List<MangaFolderEntry> findByFolderId(@Param("folderId") Long folderId);
 
 	void deleteByFolderId(Long folderId);
 
+	void deleteByMangaIdAndFolderId(String mangaId, Long folderId);
+	/**
+	 * @Query("delete from MangaFolderEntry mfe where mfe.mangaId = ?1 and
+	 * mfe.folderId = ?2")
+	 * void deleteByMangaIdAndFolderId(String mangaId, Long folderId);
+	 */
 }

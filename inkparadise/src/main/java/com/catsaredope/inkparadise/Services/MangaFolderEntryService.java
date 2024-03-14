@@ -11,12 +11,15 @@ public class MangaFolderEntryService {
 	@Autowired
 	private MangaFolderEntryRepository mangaFolderEntryRepository;
 
-	public List<MangaFolderEntry> findAccountByEmailAndPassword(Long id) {
-		return mangaFolderEntryRepository.findByFolderId(id);
+	public List<MangaFolderEntry> findFolderEntriesbyFolderId(Long folderId) {
+		return mangaFolderEntryRepository.findByFolderId(folderId);
 	}
 
 	public void deleteByFolderId(Long folderId) {
 		mangaFolderEntryRepository.deleteByFolderId(folderId);
 	}
 
+	public void deleteMangaFolderEntryByMangaIdAndFolderId(String mangaId, Long folderId) {
+		mangaFolderEntryRepository.deleteByMangaIdAndFolderId(mangaId, folderId);
+	}
 }
