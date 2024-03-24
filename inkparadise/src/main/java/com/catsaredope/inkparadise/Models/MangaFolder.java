@@ -6,55 +6,55 @@ import jakarta.persistence.*;
 @Table(name = "mangaFolder", schema = "inkParadise")
 public class MangaFolder {
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private long folderId;
-	private long userId;
-	private String folderName;
-	private String folderDescription;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private long folderId;
 
-	public MangaFolder() {
-	}
+  private long userId;
+  private String folderName;
+  private String folderDescription;
 
-	public MangaFolder(long folderId, long userId, String folderName) {
-		this.folderId = folderId;
-		this.userId = userId;
-		this.folderName = folderName;
-	}
+  public MangaFolder() {}
 
-	@Column(name = "folderId")
-	public long getFolderId() {
-		return folderId;
-	}
+  public MangaFolder(long folderId, long userId, String folderName) {
+    this.folderId = folderId;
+    this.userId = userId;
+    this.folderName = folderName;
+  }
 
-	public void setFolderId(long newFolderId) {
-		this.folderId = newFolderId;
-	}
+  @Column(name = "folderId")
+  public long getFolderId() {
+    return folderId;
+  }
 
-	@Column(name = "userId", nullable = false)
-	public long getUserId() {
-		return userId;
-	}
+  public void setFolderId(long newFolderId) {
+    this.folderId = newFolderId;
+  }
 
-	public void setUserId(long newUserId) {
-		this.userId = newUserId;
-	}
+  @Column(name = "userId", nullable = false)
+  public long getUserId() {
+    return userId;
+  }
 
-	@Column(name = "folderName", nullable = false, length = 20)
-	public String getFolderName() {
-		return folderName;
-	}
+  public void setUserId(long newUserId) {
+    this.userId = newUserId;
+  }
 
-	public void setFolderName(String newFolderName) {
-		this.folderName = newFolderName;
-	}
+  @Column(name = "folderName", nullable = false, length = 20)
+  public String getFolderName() {
+    return folderName;
+  }
 
-	@Column(name = "folderDescription", length = 100)
-	public String getFolderDescription() {
-		return folderDescription;
-	}
+  public void setFolderName(String newFolderName) {
+    this.folderName = newFolderName;
+  }
 
-	public void setFolderDescription(String newFolderDescription) {
-		this.folderDescription = newFolderDescription;
-	}
+  @Column(name = "folderDescription", length = 100)
+  public String getFolderDescription() {
+    return folderDescription;
+  }
+
+  public void setFolderDescription(String newFolderDescription) {
+    this.folderDescription = newFolderDescription;
+  }
 }

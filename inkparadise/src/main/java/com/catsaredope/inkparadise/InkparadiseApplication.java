@@ -6,8 +6,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 public class InkparadiseApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(InkparadiseApplication.class, args);
-	}
-
+  public static void main(String[] args) {
+    SpringApplication.run(InkparadiseApplication.class, args);
+  }
 }
+

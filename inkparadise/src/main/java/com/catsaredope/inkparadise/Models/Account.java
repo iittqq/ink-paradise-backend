@@ -5,71 +5,71 @@ import jakarta.persistence.*;
 @Entity
 @Table(name = "userAccount", schema = "inkParadise")
 public class Account {
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private long id;
-	private String email;
-	private String password;
-	private String username;
-	private int contentFilter;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private long id;
 
-	public Account() {
-	}
+  private String email;
+  private String password;
+  private String username;
+  private int contentFilter;
 
-	public Account(String email, String password) {
-		this.email = email;
-		this.password = password;
-	}
+  public Account() {}
 
-	public Account(long id, String email, String password, String username, int contentFilter) {
-		this.id = id;
-		this.email = email;
-		this.password = password;
-		this.username = username;
-		this.contentFilter = contentFilter;
-	}
+  public Account(String email, String password) {
+    this.email = email;
+    this.password = password;
+  }
 
-	public long getId() {
-		return id;
-	}
+  public Account(long id, String email, String password, String username, int contentFilter) {
+    this.id = id;
+    this.email = email;
+    this.password = password;
+    this.username = username;
+    this.contentFilter = contentFilter;
+  }
 
-	public void setId(long newId) {
-		this.id = newId;
-	}
+  public long getId() {
+    return id;
+  }
 
-	@Column(name = "email", nullable = false, length = 50)
-	public String getEmail() {
-		return email;
-	}
+  public void setId(long newId) {
+    this.id = newId;
+  }
 
-	public void setEmail(String newEmail) {
-		this.email = newEmail;
-	}
+  @Column(name = "email", nullable = false, length = 50)
+  public String getEmail() {
+    return email;
+  }
 
-	@Column(name = "password", nullable = false, length = 50)
-	public String getPassword() {
-		return password;
-	}
+  public void setEmail(String newEmail) {
+    this.email = newEmail;
+  }
 
-	public void setPassword(String newPassword) {
-		this.password = newPassword;
-	}
+  @Column(name = "password", nullable = false, length = 50)
+  public String getPassword() {
+    return password;
+  }
 
-	@Column(name = "username", nullable = true, length = 50)
-	public String getUsername() {
-		return username;
-	}
+  public void setPassword(String newPassword) {
+    this.password = newPassword;
+  }
 
-	public void setUsername(String newUserName) {
-		this.username = newUserName;
-	}
+  @Column(name = "username", nullable = true, length = 50)
+  public String getUsername() {
+    return username;
+  }
 
-	@Column(name = "contentFilter", nullable = false)
-	public int getContentFilter() {
-		return contentFilter;
-	}
+  public void setUsername(String newUserName) {
+    this.username = newUserName;
+  }
 
-	public void setContentFilter(int newContentFilter) {
-		this.contentFilter = newContentFilter;
-	}
+  @Column(name = "contentFilter", nullable = false)
+  public int getContentFilter() {
+    return contentFilter;
+  }
+
+  public void setContentFilter(int newContentFilter) {
+    this.contentFilter = newContentFilter;
+  }
 }
