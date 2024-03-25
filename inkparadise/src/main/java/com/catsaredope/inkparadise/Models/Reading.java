@@ -9,13 +9,15 @@ public class Reading {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private long id;
 
+  private long userId;
   private String mangaId;
   private long chapter;
 
   public Reading() {}
 
-  public Reading(long id, String mangaId, long chapter) {
+  public Reading(long id, long userId, String mangaId, long chapter) {
     this.id = id;
+    this.userId = userId;
     this.mangaId = mangaId;
     this.chapter = chapter;
   }
@@ -26,6 +28,15 @@ public class Reading {
 
   public void setId(long newId) {
     this.id = newId;
+  }
+
+  @Column(name = "userId", nullable = false, length = 50)
+  public long getUserId() {
+    return userId;
+  }
+
+  public void setUserId(long newUserId) {
+    this.userId = newUserId;
   }
 
   @Column(name = "mangaId", nullable = false, length = 50)

@@ -33,6 +33,14 @@ public class ReadingController {
     return ResponseEntity.ok().body(reading);
   }
 
+  @GetMapping("/reading/find_by_user_id/{userId}")
+  public List<Reading> getReadingByUserId(@PathVariable(value = "userId") Long userId) {
+    if (userId == null) {
+      throw new IllegalArgumentException("Reading id cannot be null");
+    }
+    return readingRepository.findByUserId(userId);
+  }
+
   @PostMapping("/reading/new")
   public Reading createReading(@Valid @RequestBody Reading reading) {
     if (reading.getMangaId() == null || reading.getChapter() == 0) {
