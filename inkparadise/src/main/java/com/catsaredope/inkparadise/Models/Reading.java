@@ -12,14 +12,16 @@ public class Reading {
   private long userId;
   private String mangaId;
   private long chapter;
+  private String mangaName;
 
   public Reading() {}
 
-  public Reading(long id, long userId, String mangaId, long chapter) {
+  public Reading(long id, long userId, String mangaId, long chapter, String mangaName) {
     this.id = id;
     this.userId = userId;
     this.mangaId = mangaId;
     this.chapter = chapter;
+    this.mangaName = mangaName;
   }
 
   public long getId() {
@@ -55,5 +57,14 @@ public class Reading {
 
   public void setChapter(long newChapter) {
     this.chapter = newChapter;
+  }
+
+  @Column(name = "mangaName", nullable = false, length = 50)
+  public String getMangaName() {
+    return mangaName;
+  }
+
+  public void setMangaName(String newMangaName) {
+    this.mangaName = newMangaName;
   }
 }
