@@ -84,4 +84,17 @@ public class ReadingController {
     response.put("deleted", Boolean.TRUE);
     return response;
   }
+
+  @DeleteMapping("/reading/delete_by_manga_id_and_user_id/{mangaId}/{userId}")
+  public Map<String, Boolean> deleteReadingByMangaIdAndUserId(
+      @PathVariable(value = "mangaId") String mangaId, @PathVariable(value = "userId") Long userId)
+      throws Exception {
+    if (mangaId == null || userId == null) {
+      throw new IllegalArgumentException("Manga id and user id cannot be null");
+    }
+    readingRepository.deleteByMangaIdAndUserId(mangaId, userId);
+    Map<String, Boolean> response = new HashMap<>();
+    response.put("deleted", Boolean.TRUE);
+    return response;
+  }
 }
