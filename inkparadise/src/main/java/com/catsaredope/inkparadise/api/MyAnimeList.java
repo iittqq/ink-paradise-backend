@@ -50,4 +50,17 @@ public class MyAnimeList {
     // Make the request
     return restTemplate.exchange(requestEntity, String.class).getBody();
   }
+
+  @GetMapping("/fetch-account")
+  public String fetchAccount(@RequestParam(value = "username", required = true) String username) {
+    String externalApiUrl = "https://api.myanimelist.net/v2/users/@me" + username;
+    // Create HttpHeaders and set the User-Agent header
+    HttpHeaders headers = new HttpHeaders();
+    headers.add("User-Agent", "ink-paradise");
+    // Create a RequestEntity with headers
+    RequestEntity<Object> requestEntity =
+        new RequestEntity<>(headers, HttpMethod.GET, URI.create(externalApiUrl));
+    // Make the request
+    return restTemplate.exchange(requestEntity, String.class).getBody();
+  }
 }
