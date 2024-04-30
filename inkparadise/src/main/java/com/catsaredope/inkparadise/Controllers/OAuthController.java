@@ -1,6 +1,7 @@
 package com.catsaredope.inkparadise.Controllers;
 
 import jakarta.servlet.http.HttpSession;
+import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
@@ -13,10 +14,31 @@ import org.springframework.stereotype.Controller;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.servlet.view.RedirectView;
+
+class OAuthResponse {
+  String url;
+  String codeVerifier;
+
+  public String getUrl() {
+    return url;
+  }
+
+  public void setUrl(String url) {
+    this.url = url;
+  }
+
+  public String getCodeVerifier() {
+    return codeVerifier;
+  }
+
+  public void setCodeVerifier(String codeVerifier) {
+    this.codeVerifier = codeVerifier;
+  }
+}
 
 @Controller
 @RequestMapping("/oauth")
@@ -29,79 +51,125 @@ public class OAuthController {
   private String clientSecret;
 
   @GetMapping("/authorize")
-  public RedirectView authorize(HttpSession session) {
+  public ResponseEntity<OAuthResponse> authorize(HttpSession session) {
     // Generate a code verifier
     String codeVerifier = generateRandomString(128);
 
     session.setAttribute("code_verifier", codeVerifier);
-
+    SecureRandom secureRandom = new SecureRandom();
+    String state = new BigInteger(130, secureRandom).toString(32);
     // Generate a code challenge
     String codeChallenge = generateCodeChallenge(codeVerifier);
 
-    String redirectUri = "http://localhost:8080/oauth/callback"; // Change this to your callback URI
-    String proxyUrl = "http://localhost:8080/proxy/myanimelist";
+    String redirectUri = "http://localhost:5173/"; // Change this to your callback URI
+    String proxyUrl = "https://proxy-ink-paradise-a8992eb99868.herokuapp.com/";
     String authorizationUrl =
-        proxyUrl
+        "https://myanimelist.net/v1/oauth2/authorize"
             + "?response_type=code"
             + "&client_id="
             + clientId
-            + "&redirect_uri="
-            + redirectUri
             + "&code_challenge="
             + codeChallenge
+            + "&state="
+            + state
+            + "&redirect_uri="
+            + redirectUri
             + "&code_challenge_method=plain";
-    return new RedirectView(authorizationUrl);
+
+    // Combine proxy URL and authorization path directly
+    String fullUrl = authorizationUrl;
+
+    System.out.println(fullUrl);
+    OAuthResponse response = new OAuthResponse();
+    response.setUrl(fullUrl);
+    response.setCodeVerifier(codeVerifier);
+    return ResponseEntity.ok().body(response);
   }
 
   @GetMapping("/callback")
-  public ResponseEntity<Map<String, Object>> callback(
-      @RequestParam("code") String code, HttpSession session) {
+  public ResponseEntity<String> callback(
+      @RequestParam("code") String code, @RequestParam("state") String state, HttpSession session) {
 
     // Retrieve codeVerifier from session
     String codeVerifier = (String) session.getAttribute("code_verifier");
 
+    System.out.println(codeVerifier);
+    System.out.println(code);
+    System.out.println(state);
     if (codeVerifier == null) {
       throw new RuntimeException("Code verifier not found in session");
     }
-    // Exchange authorization code for access token
-    String accessToken = exchangeAuthorizationCodeForAccessToken(code, codeVerifier);
+    String tokenUrl = "https://myanimelist.net/v1/oauth2/token";
+    String proxyUrl =
+        "https://proxy-ink-paradise-a8992eb99868.herokuapp.com/"; // Change this to your proxy URI
+    // Create headers
+    HttpHeaders headers = new HttpHeaders();
 
-    // Fetch user's account details using the access token
-    Map<String, Object> userDetails = fetchUserDetails(accessToken);
+    RestTemplate restTemplate = new RestTemplate();
 
+    headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+
+    MultiValueMap<String, String> requestBody = new LinkedMultiValueMap<>();
+    requestBody.add("client_id", clientId);
+    requestBody.add("client_secret", clientSecret);
+    requestBody.add("code", code);
+    requestBody.add("code_verifier", codeVerifier);
+    requestBody.add("grant_type", "authorization_code");
+
+    HttpEntity<MultiValueMap<String, String>> requestEntity =
+        new HttpEntity<>(requestBody, headers);
+    System.out.println(requestEntity);
+
+    // ResponseEntity<String> responseEntity =
+    // restTemplate.postForEntity(tokenUrl, requestEntity, String.class);
+
+    /**
+     * // Prepare request body MultiValueMap<String, String> requestBody = new
+     * LinkedMultiValueMap<>(); requestBody.add("client_id", clientId);
+     * requestBody.add("client_secret", clientSecret); requestBody.add("code", code);
+     * requestBody.add("code_verifier", codeVerifier); requestBody.add("grant_type",
+     * "authorization_code"); requestBody.add( "redirect_uri", "http://localhost:5173/login"); //
+     * Change this to your callback URI
+     *
+     * <p>System.out.println(requestBody); // Create HTTP entity with headers and parameters
+     * HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(requestBody,
+     * headers);
+     *
+     * <p>// Make POST request RestTemplate restTemplate = new RestTemplate();
+     * ResponseEntity<String> responseEntity = restTemplate.postForEntity(tokenUrl, requestEntity,
+     * String.class);
+     */
     // Return user details in JSON format
-    return ResponseEntity.ok().body(userDetails);
+    return ResponseEntity.ok().body(code);
   }
 
   // Exchange authorization code for access token
-  private String exchangeAuthorizationCodeForAccessToken(String code, String codeVerifier) {
+  @PostMapping("/exchange")
+  public ResponseEntity<String> exchangeAuthorizationCodeForAccessToken(
+      String code, String codeVerifier) {
     String tokenUrl = "https://myanimelist.net/v1/oauth2/token";
+    String proxyUrl =
+        "https://proxy-ink-paradise-a8992eb99868.herokuapp.com/"; // Change this to your proxy URI
+    // Create headers
     HttpHeaders headers = new HttpHeaders();
     headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-
     // Prepare request body
     MultiValueMap<String, String> requestBody = new LinkedMultiValueMap<>();
     requestBody.add("client_id", clientId);
     requestBody.add("client_secret", clientSecret);
+    requestBody.add("code_verifier", codeVerifier);
     requestBody.add("grant_type", "authorization_code");
     requestBody.add("code", code);
-    requestBody.add(
-        "redirect_uri", "http://localhost:8080/oauth/callback"); // Change this to your callback URI
-    requestBody.add("code_verifier", codeVerifier);
+    requestBody.add("redirect_uri", "http://localhost:5173"); // Change this to your callback URI
+
+    System.out.println(requestBody);
+    // Create HTTP entity with headers and parameters
     HttpEntity<MultiValueMap<String, String>> requestEntity =
         new HttpEntity<>(requestBody, headers);
-    // Create ParameterizedTypeReference to specify the response type
-    ParameterizedTypeReference<Map<String, Object>> responseType =
-        new ParameterizedTypeReference<Map<String, Object>>() {};
-    // Make the POST request to exchange code for access token
-    ResponseEntity<Map<String, Object>> responseEntity =
-        new RestTemplate().exchange(tokenUrl, HttpMethod.POST, requestEntity, responseType);
-    if (responseEntity.getStatusCode() == HttpStatus.OK) {
-      return responseEntity.getBody().get("access_token").toString();
-    } else {
-      // Handle error
-      throw new RuntimeException("Error exchanging code for access token");
-    }
+
+    // Make POST request
+    RestTemplate restTemplate = new RestTemplate();
+    return restTemplate.postForEntity(tokenUrl, requestEntity, String.class);
   }
 
   // Fetch user's account details using the access token
