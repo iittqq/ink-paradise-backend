@@ -12,7 +12,6 @@ public class Account {
   private String email;
   private String password;
   private String username;
-  private int contentFilter;
 
   public Account() {}
 
@@ -21,12 +20,11 @@ public class Account {
     this.password = password;
   }
 
-  public Account(long id, String email, String password, String username, int contentFilter) {
+  public Account(long id, String email, String password, String username) {
     this.id = id;
     this.email = email;
     this.password = password;
     this.username = username;
-    this.contentFilter = contentFilter;
   }
 
   public long getId() {
@@ -62,14 +60,5 @@ public class Account {
 
   public void setUsername(String newUserName) {
     this.username = newUserName;
-  }
-
-  @Column(name = "contentFilter", nullable = false)
-  public int getContentFilter() {
-    return contentFilter;
-  }
-
-  public void setContentFilter(int newContentFilter) {
-    this.contentFilter = newContentFilter;
   }
 }

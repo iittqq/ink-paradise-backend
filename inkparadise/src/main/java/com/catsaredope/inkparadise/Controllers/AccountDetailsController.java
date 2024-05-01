@@ -22,27 +22,35 @@ public class AccountDetailsController {
 
   @Autowired private AccountDetailsRepository accountDetailsRepository;
 
-  @GetMapping("/account-details/{id}")
-  public ResponseEntity<AccountDetails> getAccountDetailsById(
-      @PathVariable(value = "id") long accountId) throws Exception {
+  @GetMapping("/account-details/find-by-accountId/{accountId}")
+  public ResponseEntity<AccountDetails> getAccountDetailsByAccountId(
+      @PathVariable(value = "accountId") long accountId) throws Exception {
 
     AccountDetails accountDetails = accountDetailsRepository.findByAccountId(accountId);
 
     return ResponseEntity.ok().body(accountDetails);
   }
 
-  @PostMapping("/account-details/new")
+  @PostMapping("/account-details/create-details/new")
   public AccountDetails createAccountDetails(@Valid @RequestBody AccountDetails accountDetails) {
+    if (accountDetails.getAccountId() == 0
+        || accountDetails.getUsername() == null
+        || accountDetails.getBio() == null
+        || accountDetails.getProfilePicture() == null
+        || accountDetails.getHeaderPicture() == null
+        || accountDetails.getBirthday() == null
+        || accountDetails.getContentFilter() == 0) {
+      throw new IllegalArgumentException("Account details missing:" + accountDetails);
+    }
 
     return accountDetailsRepository.save(accountDetails);
   }
 
-  @PutMapping("/account-details/{id}")
+  @PutMapping("/account-details/update-details/{id}")
   public ResponseEntity<AccountDetails> updateAccountDetails(
-      @PathVariable(value = "id") long accountId,
-      @Valid @RequestBody AccountDetails newAccountDetails)
+      @PathVariable(value = "id") long id, @Valid @RequestBody AccountDetails newAccountDetails)
       throws Exception {
-    AccountDetails accountDetails = accountDetailsRepository.findByAccountId(accountId);
+    AccountDetails accountDetails = accountDetailsRepository.findByAccountId(id);
     accountDetails.setAccountId(newAccountDetails.getAccountId());
     accountDetails.setUsername(newAccountDetails.getUsername());
     accountDetails.setBio(newAccountDetails.getBio());
@@ -53,7 +61,7 @@ public class AccountDetailsController {
     return ResponseEntity.ok(updatedAccountDetails);
   }
 
-  @DeleteMapping("/account-details/{id}")
+  @DeleteMapping("/account-details/delete-details/{id}")
   public Map<String, Boolean> deleteAccountDetails(@PathVariable(value = "id") long accountId)
       throws Exception {
 

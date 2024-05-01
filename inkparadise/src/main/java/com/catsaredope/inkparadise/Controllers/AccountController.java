@@ -75,7 +75,6 @@ public class AccountController {
     account.setEmail(accountDetails.getEmail());
     account.setPassword(accountDetails.getPassword());
     account.setUsername(accountDetails.getUsername());
-    account.setContentFilter(accountDetails.getContentFilter());
     final Account updatedAccount = accountRepository.save(account);
     return ResponseEntity.ok(updatedAccount);
   }
