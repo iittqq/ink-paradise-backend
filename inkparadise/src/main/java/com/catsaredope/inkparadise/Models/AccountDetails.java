@@ -9,6 +9,8 @@ public class AccountDetails {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private long id;
 
+  private long accountId;
+
   private String username;
 
   private String bio;
@@ -23,12 +25,14 @@ public class AccountDetails {
 
   public AccountDetails(
       long id,
+      long accountId,
       String username,
       String bio,
       byte[] profilePicture,
       byte[] headerPicture,
       String birthday) {
     this.id = id;
+    this.accountId = accountId;
     this.username = username;
     this.bio = bio;
     this.profilePicture = profilePicture;
@@ -42,6 +46,15 @@ public class AccountDetails {
 
   public void setId(long newId) {
     this.id = newId;
+  }
+
+  @Column(name = "accountId", nullable = false)
+  public long getAccountId() {
+    return accountId;
+  }
+
+  public void setAccountId(long newAccountId) {
+    this.accountId = newAccountId;
   }
 
   @Column(name = "username", nullable = false, length = 50)

@@ -24,32 +24,26 @@ public class AccountDetailsController {
 
   @GetMapping("/account-details/{id}")
   public ResponseEntity<AccountDetails> getAccountDetailsById(
-      @PathVariable(value = "id") long accountDetailsId) throws Exception {
+      @PathVariable(value = "id") long accountId) throws Exception {
 
-    AccountDetails accountDetails = accountDetailsRepository.findById(accountDetailsId);
+    AccountDetails accountDetails = accountDetailsRepository.findByAccountId(accountId);
 
     return ResponseEntity.ok().body(accountDetails);
   }
 
   @PostMapping("/account-details/new")
   public AccountDetails createAccountDetails(@Valid @RequestBody AccountDetails accountDetails) {
-    if (accountDetails.getUsername() == null
-        || accountDetails.getBio() == null
-        || accountDetails.getProfilePicture() == null
-        || accountDetails.getHeaderPicture() == null
-        || accountDetails.getBirthday() == null) {
 
-      throw new IllegalArgumentException("Account details first name and last name cannot be null");
-    }
     return accountDetailsRepository.save(accountDetails);
   }
 
   @PutMapping("/account-details/{id}")
   public ResponseEntity<AccountDetails> updateAccountDetails(
-      @PathVariable(value = "id") long accountDetailsId,
+      @PathVariable(value = "id") long accountId,
       @Valid @RequestBody AccountDetails newAccountDetails)
       throws Exception {
-    AccountDetails accountDetails = accountDetailsRepository.findById(accountDetailsId);
+    AccountDetails accountDetails = accountDetailsRepository.findByAccountId(accountId);
+    accountDetails.setAccountId(newAccountDetails.getAccountId());
     accountDetails.setUsername(newAccountDetails.getUsername());
     accountDetails.setBio(newAccountDetails.getBio());
     accountDetails.setProfilePicture(newAccountDetails.getProfilePicture());
@@ -63,7 +57,7 @@ public class AccountDetailsController {
   public Map<String, Boolean> deleteAccountDetails(@PathVariable(value = "id") long accountId)
       throws Exception {
 
-    AccountDetails accountDetails = accountDetailsRepository.findById(accountId);
+    AccountDetails accountDetails = accountDetailsRepository.findByAccountId(accountId);
 
     if (accountDetails == null) {
       throw new Exception("Account not found for this id :: " + accountId);

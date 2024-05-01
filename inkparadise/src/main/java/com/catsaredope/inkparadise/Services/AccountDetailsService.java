@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 public class AccountDetailsService {
   @Autowired private AccountDetailsRepository accountDetailsRepository;
 
-  public AccountDetails findAccountDetailsById(long id) {
-    return accountDetailsRepository.findById(id);
+  public AccountDetails findAccountDetailsByAccountId(long id) {
+    return accountDetailsRepository.findByAccountId(id);
   }
 }
