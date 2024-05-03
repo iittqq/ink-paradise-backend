@@ -18,19 +18,14 @@ public class AccountDetails {
   @Column(name = "accountId", nullable = false)
   private long accountId;
 
-  @Column(name = "username", nullable = false, length = 50)
-  private String username;
-
   @Column(name = "bio", nullable = true, length = 150)
   private String bio;
 
-  @Lob
-  @Column(name = "profilePicture", columnDefinition = "LONGBLOB", nullable = true)
-  private byte[] profilePicture;
+  @Column(name = "profilePicture", nullable = true, length = 500)
+  private String profilePicture;
 
-  @Lob
-  @Column(name = "headerPicture", columnDefinition = "LONGBLOB", nullable = true)
-  private byte[] headerPicture;
+  @Column(name = "headerPicture", nullable = true, length = 500)
+  private String headerPicture;
 
   @Column(name = "birthday", nullable = true, length = 50)
   private String birthday;
@@ -54,14 +49,6 @@ public class AccountDetails {
     this.accountId = newAccountId;
   }
 
-  public String getUsername() {
-    return username;
-  }
-
-  public void setUsername(String newUsername) {
-    this.username = newUsername;
-  }
-
   public String getBio() {
     return bio;
   }
@@ -70,19 +57,19 @@ public class AccountDetails {
     this.bio = newBio;
   }
 
-  public byte[] getProfilePicture() {
+  public String getProfilePicture() {
     return profilePicture;
   }
 
-  public void setProfilePicture(byte[] newProfilePicture) {
+  public void setProfilePicture(String newProfilePicture) {
     this.profilePicture = newProfilePicture;
   }
 
-  public byte[] getHeaderPicture() {
+  public String getHeaderPicture() {
     return headerPicture;
   }
 
-  public void setHeaderPicture(byte[] newHeaderPicture) {
+  public void setHeaderPicture(String newHeaderPicture) {
     this.headerPicture = newHeaderPicture;
   }
 
