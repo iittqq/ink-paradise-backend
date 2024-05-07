@@ -2,7 +2,6 @@ package com.catsaredope.inkparadise.Controllers;
 
 import com.catsaredope.inkparadise.Models.AccountDetails;
 import com.catsaredope.inkparadise.Repositories.AccountDetailsRepository;
-import com.catsaredope.inkparadise.Services.ImageService;
 import jakarta.validation.Valid;
 import java.util.HashMap;
 import java.util.Map;
@@ -15,16 +14,13 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/api/v1")
 public class AccountDetailsController {
 
   @Autowired private AccountDetailsRepository accountDetailsRepository;
-  @Autowired private ImageService imageService;
 
   @GetMapping("/account-details/find-by-accountId/{accountId}")
   public ResponseEntity<AccountDetails> getAccountDetailsByAccountId(
@@ -36,10 +32,8 @@ public class AccountDetailsController {
   }
 
   @PostMapping("/account-details/create-details/new")
-  public AccountDetails createAccountDetails(
-      @Valid @RequestBody AccountDetails accountDetails,
-      @RequestParam("profilePicture") MultipartFile[] profilePicture,
-      @RequestParam("headerPicture") MultipartFile[] headerPicture) {
+  public AccountDetails createAccountDetails(@Valid @RequestBody AccountDetails accountDetails) {
+
     if (accountDetails.getAccountId() == 0
         || accountDetails.getBio() == null
         || accountDetails.getBirthday() == null
@@ -47,39 +41,23 @@ public class AccountDetailsController {
       throw new IllegalArgumentException("Account details missing:" + accountDetails);
     }
 
-    String uploadDirectory = "src/main/resources/static/images/pictures";
-    String profilePictureString = "";
-    String headerPictureString = "";
-    try {
-
-      for (MultipartFile imageFile : profilePicture) {
-        profilePictureString = imageService.saveImageToStorage(uploadDirectory, imageFile);
-      }
-      accountDetails.setProfilePicture(profilePictureString);
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
-    try {
-      for (MultipartFile imageFile : headerPicture) {
-        headerPictureString = imageService.saveImageToStorage(uploadDirectory, imageFile);
-      }
-      accountDetails.setHeaderPicture(headerPictureString);
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
+    System.out.println("Account Details: ");
+    System.out.println(accountDetails);
     return accountDetailsRepository.save(accountDetails);
   }
 
   @PutMapping("/account-details/update-details/{id}")
   public ResponseEntity<AccountDetails> updateAccountDetails(
-      @PathVariable(value = "id") long id, @Valid @RequestBody AccountDetails newAccountDetails)
+      @PathVariable(value = "id") long id, @Valid @RequestBody AccountDetails accountDetails)
       throws Exception {
-    AccountDetails accountDetails = accountDetailsRepository.findByAccountId(id);
-    accountDetails.setAccountId(newAccountDetails.getAccountId());
-    accountDetails.setBio(newAccountDetails.getBio());
-
-    accountDetails.setBirthday(newAccountDetails.getBirthday());
-    final AccountDetails updatedAccountDetails = accountDetailsRepository.save(accountDetails);
+    AccountDetails account = accountDetailsRepository.findByAccountId(id);
+    account.setAccountId(accountDetails.getAccountId());
+    account.setBio(accountDetails.getBio());
+    account.setContentFilter(accountDetails.getContentFilter());
+    account.setProfilePicture(accountDetails.getProfilePicture());
+    account.setHeaderPicture(accountDetails.getHeaderPicture());
+    account.setBirthday(accountDetails.getBirthday());
+    final AccountDetails updatedAccountDetails = accountDetailsRepository.save(account);
     return ResponseEntity.ok(updatedAccountDetails);
   }
 
