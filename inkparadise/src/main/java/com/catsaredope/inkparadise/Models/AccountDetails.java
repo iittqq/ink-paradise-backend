@@ -21,10 +21,10 @@ public class AccountDetails {
   @Column(name = "bio", nullable = true, length = 150)
   private String bio;
 
-  @Column(name = "profilePicture", nullable = true, length = 500)
+  @Column(name = "profilePicture", nullable = true, length = 1000)
   private String profilePicture;
 
-  @Column(name = "headerPicture", nullable = true, length = 500)
+  @Column(name = "headerPicture", nullable = true, length = 1000)
   private String headerPicture;
 
   @Column(name = "birthday", nullable = true, length = 50)
