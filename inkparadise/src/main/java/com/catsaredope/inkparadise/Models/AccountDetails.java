@@ -27,9 +27,6 @@ public class AccountDetails {
   @Column(name = "headerPicture", nullable = true, length = 1000)
   private String headerPicture;
 
-  @Column(name = "birthday", nullable = true, length = 50)
-  private String birthday;
-
   @Column(name = "contentFilter", nullable = false)
   private long contentFilter;
 
@@ -71,14 +68,6 @@ public class AccountDetails {
 
   public void setHeaderPicture(String newHeaderPicture) {
     this.headerPicture = newHeaderPicture;
-  }
-
-  public String getBirthday() {
-    return birthday;
-  }
-
-  public void setBirthday(String newBirthday) {
-    this.birthday = newBirthday;
   }
 
   public long getContentFilter() {

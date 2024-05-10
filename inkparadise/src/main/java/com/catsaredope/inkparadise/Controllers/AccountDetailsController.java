@@ -36,7 +36,6 @@ public class AccountDetailsController {
 
     if (accountDetails.getAccountId() == 0
         || accountDetails.getBio() == null
-        || accountDetails.getBirthday() == null
         || accountDetails.getContentFilter() == 0) {
       throw new IllegalArgumentException("Account details missing:" + accountDetails);
     }
@@ -56,7 +55,6 @@ public class AccountDetailsController {
     account.setContentFilter(accountDetails.getContentFilter());
     account.setProfilePicture(accountDetails.getProfilePicture());
     account.setHeaderPicture(accountDetails.getHeaderPicture());
-    account.setBirthday(accountDetails.getBirthday());
     final AccountDetails updatedAccountDetails = accountDetailsRepository.save(account);
     return ResponseEntity.ok(updatedAccountDetails);
   }
