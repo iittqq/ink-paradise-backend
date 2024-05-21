@@ -22,5 +22,5 @@
 hs_err_pid*
 replay_pid*
 
-inkparadise/src/main/resources/application.properties
+application.properties
 
