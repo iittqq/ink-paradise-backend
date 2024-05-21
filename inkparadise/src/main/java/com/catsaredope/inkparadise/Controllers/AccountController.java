@@ -4,7 +4,10 @@ import com.catsaredope.inkparadise.Models.Account;
 import com.catsaredope.inkparadise.Models.LoginRequest;
 import com.catsaredope.inkparadise.Repositories.AccountRepository;
 import com.catsaredope.inkparadise.Services.AccountService;
+import jakarta.mail.MessagingException;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
+import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,6 +20,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -51,6 +55,27 @@ public class AccountController {
   }
 
   @Autowired private AccountService accountService;
+
+  @PostMapping("/accounts/register")
+  public String register(@RequestBody Account account, HttpServletRequest request)
+      throws UnsupportedEncodingException, MessagingException {
+    accountService.registerAccount(account, getSiteURL(request));
+    return "Success";
+  }
+
+  private String getSiteURL(HttpServletRequest request) {
+    String siteURL = request.getRequestURL().toString();
+    return siteURL.replace(request.getServletPath(), "");
+  }
+
+  @GetMapping("/accounts/verify")
+  public String verifyAccount(@RequestParam("code") String code) {
+    if (accountService.verify(code)) {
+      return "verify_success";
+    } else {
+      return "verify_fail";
+    }
+  }
 
   @PostMapping("/accounts/login")
   public Account login(@RequestBody LoginRequest loginRequest) {

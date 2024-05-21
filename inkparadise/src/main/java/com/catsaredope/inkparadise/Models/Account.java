@@ -1,7 +1,11 @@
 package com.catsaredope.inkparadise.Models;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
 @Table(name = "userAccount", schema = "inkParadise")
 public class Account {
@@ -9,22 +13,24 @@ public class Account {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private long id;
 
+  @Column(name = "email", nullable = false, length = 50)
   private String email;
+
+  @Column(name = "password", nullable = false, length = 50)
   private String password;
+
+  @Column(name = "username", nullable = false, length = 50)
   private String username;
 
-  public Account() {}
+  @Column(name = "verificationCode", nullable = false, length = 64)
+  private String verificationCode;
+
+  @Column(name = "verified", nullable = false)
+  private boolean verified;
 
   public Account(String email, String password) {
     this.email = email;
     this.password = password;
-  }
-
-  public Account(long id, String email, String password, String username) {
-    this.id = id;
-    this.email = email;
-    this.password = password;
-    this.username = username;
   }
 
   public long getId() {
@@ -35,7 +41,6 @@ public class Account {
     this.id = newId;
   }
 
-  @Column(name = "email", nullable = false, length = 50)
   public String getEmail() {
     return email;
   }
@@ -44,7 +49,6 @@ public class Account {
     this.email = newEmail;
   }
 
-  @Column(name = "password", nullable = false, length = 50)
   public String getPassword() {
     return password;
   }
@@ -53,12 +57,27 @@ public class Account {
     this.password = newPassword;
   }
 
-  @Column(name = "username", nullable = true, length = 50)
   public String getUsername() {
     return username;
   }
 
   public void setUsername(String newUserName) {
     this.username = newUserName;
+  }
+
+  public String getVerificationCode() {
+    return verificationCode;
+  }
+
+  public void setVerificationCode(String newVerificationCode) {
+    this.verificationCode = newVerificationCode;
+  }
+
+  public boolean getVerified() {
+    return verified;
+  }
+
+  public void setVerified(boolean newVerified) {
+    this.verified = newVerified;
   }
 }

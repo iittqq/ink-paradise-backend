@@ -17,6 +17,7 @@ public class CorsConfig {
             .addMapping("/**")
             .allowedOrigins("http://localhost:5173") // Replace with your React frontend URL
             .allowedMethods("GET", "POST", "PUT", "DELETE")
+            .allowedHeaders("*")
             .allowCredentials(true);
       }
     };
