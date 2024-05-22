@@ -32,3 +32,4 @@ build/
 ### VS Code ###
 .vscode/
 inkparadise/src/main/resources/
+src/main/resources/application.properties
