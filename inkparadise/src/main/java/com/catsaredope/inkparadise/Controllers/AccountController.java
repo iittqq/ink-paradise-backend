@@ -70,6 +70,7 @@ public class AccountController {
 
   @GetMapping("/accounts/verify")
   public String verifyAccount(@RequestParam("code") String code) {
+    System.out.println("Code: " + code);
     if (accountService.verify(code)) {
       return "verify_success";
     } else {
