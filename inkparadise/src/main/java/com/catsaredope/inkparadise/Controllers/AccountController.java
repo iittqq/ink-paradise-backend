@@ -2,10 +2,13 @@ package com.catsaredope.inkparadise.Controllers;
 
 import com.catsaredope.inkparadise.Models.Account;
 import com.catsaredope.inkparadise.Models.LoginRequest;
+import com.catsaredope.inkparadise.Models.UpdatePasswordRequest;
+import com.catsaredope.inkparadise.Models.UpdateUsernameRequest;
 import com.catsaredope.inkparadise.Repositories.AccountRepository;
 import com.catsaredope.inkparadise.Services.AccountService;
 import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
@@ -46,21 +49,16 @@ public class AccountController {
     return ResponseEntity.ok().body(account);
   }
 
+  @Autowired private AccountService accountService;
+
   @PostMapping("/accounts/new")
-  public Account createAccount(@Valid @RequestBody Account account) {
+  public Account createAccount(@Valid @RequestBody Account account, HttpServletRequest request)
+      throws UnsupportedEncodingException, MessagingException {
     if (account.getEmail() == null || account.getPassword() == null) {
       throw new IllegalArgumentException("Account email, password, and username cannot be null");
     }
-    return accountRepository.save(account);
-  }
-
-  @Autowired private AccountService accountService;
-
-  @PostMapping("/accounts/register")
-  public String register(@RequestBody Account account, HttpServletRequest request)
-      throws UnsupportedEncodingException, MessagingException {
     accountService.registerAccount(account, getSiteURL(request));
-    return "Success";
+    return accountRepository.save(account);
   }
 
   private String getSiteURL(HttpServletRequest request) {
@@ -69,12 +67,12 @@ public class AccountController {
   }
 
   @GetMapping("/accounts/verify")
-  public String verifyAccount(@RequestParam("code") String code) {
+  public void verifyAccount(
+      @RequestParam("code") String code, HttpServletResponse httpServletResponse) {
     System.out.println("Code: " + code);
     if (accountService.verify(code)) {
-      return "verify_success";
-    } else {
-      return "verify_fail";
+      httpServletResponse.setHeader("Location", "http://localhost:5173/");
+      httpServletResponse.setStatus(302);
     }
   }
 
@@ -103,6 +101,44 @@ public class AccountController {
     account.setUsername(accountDetails.getUsername());
     final Account updatedAccount = accountRepository.save(account);
     return ResponseEntity.ok(updatedAccount);
+  }
+
+  @PutMapping("/accounts/update/username")
+  public ResponseEntity<Account> updateAccountUsername(
+      @RequestBody UpdateUsernameRequest accountDetails) throws Exception {
+    if (accountDetails.getId() == 0 || accountDetails.getUsername() == null) {
+      throw new IllegalArgumentException("Account id cannot be null");
+    }
+    Account account =
+        accountRepository
+            .findById(accountDetails.getId())
+            .orElseThrow(
+                () -> new Exception("Account not found for this id :: " + accountDetails.getId()));
+    account.setUsername(accountDetails.getUsername());
+    final Account updatedAccount = accountRepository.save(account);
+    return ResponseEntity.ok(updatedAccount);
+  }
+
+  @PutMapping("/accounts/update/password")
+  public ResponseEntity<Account> updateAccountPassword(
+      @RequestBody UpdatePasswordRequest accountDetails) throws Exception {
+    if (accountDetails.getId() == 0
+        || accountDetails.getOldPassword() == null
+        || accountDetails.getNewPassword() == null) {
+      throw new IllegalArgumentException("Account details cannot be null");
+    }
+    Account account =
+        accountRepository
+            .findById(accountDetails.getId())
+            .orElseThrow(
+                () -> new Exception("Account not found for this id :: " + accountDetails.getId()));
+    if (account.getPassword().equals(accountDetails.getOldPassword())) {
+      account.setPassword(accountDetails.getNewPassword());
+      final Account updatedAccount = accountRepository.save(account);
+      return ResponseEntity.ok(updatedAccount);
+    } else {
+      throw new IllegalArgumentException("Old password is incorrect");
+    }
   }
 
   @DeleteMapping("/accounts/remove/{id}")

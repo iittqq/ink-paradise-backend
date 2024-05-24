@@ -61,7 +61,8 @@ public class AccountService {
 
   public boolean verify(String verificationCode) {
     Account account = accountRepository.findByVerificationCode(verificationCode);
-    if (account == null || account.getVerified()) {
+    System.out.println(account);
+    if (account == null) {
       return false;
     } else {
       account.setVerified(true);
