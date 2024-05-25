@@ -1,28 +1,32 @@
 package com.catsaredope.inkparadise.Models;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 
 @Entity
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "reading", schema = "inkParadise")
 public class Reading {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private long id;
 
+  @Column(name = "userId", nullable = false, length = 50)
   private long userId;
+
+  @Column(name = "mangaId", nullable = false, length = 50)
   private String mangaId;
+
+  @Column(name = "chapter", nullable = false, length = 50)
   private long chapter;
+
+  @Column(name = "mangaName", nullable = false, length = 50)
   private String mangaName;
 
-  public Reading() {}
-
-  public Reading(long id, long userId, String mangaId, long chapter, String mangaName) {
-    this.id = id;
-    this.userId = userId;
-    this.mangaId = mangaId;
-    this.chapter = chapter;
-    this.mangaName = mangaName;
-  }
+  @Column(name = "timestamp", nullable = false, length = 50)
+  private String timestamp;
 
   public long getId() {
     return id;
@@ -32,7 +36,6 @@ public class Reading {
     this.id = newId;
   }
 
-  @Column(name = "userId", nullable = false, length = 50)
   public long getUserId() {
     return userId;
   }
@@ -41,7 +44,6 @@ public class Reading {
     this.userId = newUserId;
   }
 
-  @Column(name = "mangaId", nullable = false, length = 50)
   public String getMangaId() {
     return mangaId;
   }
@@ -50,7 +52,6 @@ public class Reading {
     this.mangaId = newMangaId;
   }
 
-  @Column(name = "chapter", nullable = false)
   public long getChapter() {
     return chapter;
   }
@@ -59,12 +60,19 @@ public class Reading {
     this.chapter = newChapter;
   }
 
-  @Column(name = "mangaName", nullable = false, length = 50)
   public String getMangaName() {
     return mangaName;
   }
 
   public void setMangaName(String newMangaName) {
     this.mangaName = newMangaName;
+  }
+
+  public String getTimestamp() {
+    return timestamp;
+  }
+
+  public void setTimestamp(String newTimestamp) {
+    this.timestamp = newTimestamp;
   }
 }

@@ -69,6 +69,7 @@ public class ReadingController {
             .orElseThrow(() -> new Exception("Reading not found for this id :: " + id));
     reading.setMangaId(readingDetails.getMangaId());
     reading.setChapter(readingDetails.getChapter());
+    reading.setTimestamp(readingDetails.getTimestamp());
     final Reading updatedReading = readingRepository.save(reading);
     return ResponseEntity.ok(updatedReading);
   }
