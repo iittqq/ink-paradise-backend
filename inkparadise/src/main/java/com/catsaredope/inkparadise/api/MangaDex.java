@@ -151,8 +151,8 @@ public class MangaDex {
       @RequestParam(value = "id", required = true) String id,
       @RequestParam(value = "limit", required = true) Number limit,
       @RequestParam(value = "offset", required = true) Number offset,
-      @RequestParam(value = "translatedLanguage", required = true) String translatedLanguage,
-      @RequestParam(value = "order", required = true) String order) {
+      @RequestParam(value = "order", required = true) String order,
+      @RequestParam(value = "translatedLanguage", required = true) String translatedLanguage) {
     String externalApiUrl =
         "https://api.mangadex.org/manga/"
             + id
