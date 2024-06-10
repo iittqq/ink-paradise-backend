@@ -176,7 +176,7 @@ public class MangaDex {
     return restTemplate.exchange(requestEntity, String.class).getBody();
   }
 
-  @GetMapping("/scantalation-group")
+  @GetMapping("/scanlation-group")
   public String fetchScantalationGroup(@RequestParam(value = "id", required = true) String id) {
     String externalApiUrl = "https://api.mangadex.org/group/" + id;
     // Create HttpHeaders and set the User-Agent header
