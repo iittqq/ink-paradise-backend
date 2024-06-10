@@ -162,6 +162,7 @@ public class MangaDex {
             + offset
             + "&translatedLanguage[]="
             + translatedLanguage
+            + "&includes[]=scanlation_group"
             + "&order[chapter]="
             + order;
     // Create HttpHeaders and set the User-Agent header
