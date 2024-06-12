@@ -1,6 +1,9 @@
 package com.catsaredope.inkparadise.api;
 
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -175,6 +178,37 @@ public class MangaDex {
 
     // Make the request
     return restTemplate.exchange(requestEntity, String.class).getBody();
+  }
+
+  @GetMapping("/manga-similar")
+  public String fetchMangaSimilar(
+      @RequestParam(value = "limit", required = true) Number limit,
+      @RequestParam(value = "tags", required = true) String[] tags) {
+    try {
+      StringBuilder externalApiUrl = new StringBuilder("https://api.mangadex.org/manga?");
+      externalApiUrl
+          .append("limit=")
+          .append(URLEncoder.encode(limit.toString(), StandardCharsets.UTF_8.toString()));
+      externalApiUrl.append("&includedTagsMode=AND&order[rating]=desc");
+      for (String tag : tags) {
+        externalApiUrl
+            .append("&includedTags[]=")
+            .append(URLEncoder.encode(tag, StandardCharsets.UTF_8));
+      }
+      // Create HttpHeaders and set the User-Agent header
+      HttpHeaders headers = new HttpHeaders();
+      headers.add("User-Agent", "ink-paradise");
+      // Create a RequestEntity with headers
+      RequestEntity<Object> requestEntity =
+          new RequestEntity<>(headers, HttpMethod.GET, URI.create(externalApiUrl.toString()));
+      // Make the request
+      return restTemplate.exchange(requestEntity, String.class).getBody();
+    } catch (UnsupportedEncodingException e) {
+      e.printStackTrace();
+      return e.getMessage();
+    } catch (Exception e) {
+      return e.getMessage();
+    }
   }
 
   @GetMapping("/scanlation-group")
