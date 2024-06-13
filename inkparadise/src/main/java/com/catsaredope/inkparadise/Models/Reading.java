@@ -16,13 +16,13 @@ public class Reading {
   @Column(name = "userId", nullable = false, length = 50)
   private long userId;
 
-  @Column(name = "mangaId", nullable = false, length = 50)
+  @Column(name = "mangaId", nullable = false, length = 100)
   private String mangaId;
 
   @Column(name = "chapter", nullable = false, length = 50)
   private long chapter;
 
-  @Column(name = "mangaName", nullable = false, length = 50)
+  @Column(name = "mangaName", nullable = false, length = 100)
   private String mangaName;
 
   @Column(name = "timestamp", nullable = false, length = 50)
