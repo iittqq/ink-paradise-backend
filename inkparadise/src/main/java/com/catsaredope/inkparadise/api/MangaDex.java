@@ -211,6 +211,19 @@ public class MangaDex {
     }
   }
 
+  @GetMapping("/popular-manga")
+  public String fetchPopularManga(@RequestParam(value = "limit", required = true) Number limit) {
+    String externalApiUrl = "https://api.mangadex.org/manga?limit=" + limit + "&order[rating]=desc";
+    // Create HttpHeaders and set the User-Agent header
+    HttpHeaders headers = new HttpHeaders();
+    headers.add("User-Agent", "ink-paradise");
+    // Create a RequestEntity with headers
+    RequestEntity<Object> requestEntity =
+        new RequestEntity<>(headers, HttpMethod.GET, URI.create(externalApiUrl));
+    // Make the request
+    return restTemplate.exchange(requestEntity, String.class).getBody();
+  }
+
   @GetMapping("/scanlation-group")
   public String fetchScantalationGroup(@RequestParam(value = "id", required = true) String id) {
     String externalApiUrl = "https://api.mangadex.org/group/" + id;
