@@ -79,7 +79,7 @@ public class MangaDex {
 
   @GetMapping("/manga-by-id")
   public String fetchMangaById(@RequestParam(value = "id", required = true) String id) {
-    String externalApiUrl = "https://api.mangadex.org/manga/" + id;
+    String externalApiUrl = "https://api.mangadex.org/manga/" + id + "?includes[]=cover_art";
     // Create HttpHeaders and set the User-Agent header
     HttpHeaders headers = new HttpHeaders();
     headers.add("User-Agent", "ink-paradise");
@@ -99,6 +99,7 @@ public class MangaDex {
     String externalApiUrl =
         "https://api.mangadex.org/manga/?limit="
             + limit
+            + "&includes[]=cover_art"
             + "&title="
             + title.replaceAll(" ", "+")
             + "&order[relevance]=desc";
