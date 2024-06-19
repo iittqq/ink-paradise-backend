@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.RequestEntity;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -294,5 +295,35 @@ public class MangaDex {
 
     // Make the request
     return restTemplate.exchange(requestEntity, String.class).getBody();
+  }
+
+  @GetMapping("/cover-image")
+  public ResponseEntity<byte[]> fetchCoverImage(
+      @RequestParam(value = "id", required = true) String id,
+      @RequestParam(value = "fileName", required = true) String fileName) {
+    String externalApiUrl = "https://uploads.mangadex.org/covers/" + id + "/" + fileName;
+    // Create HttpHeaders and set the User-Agent header
+    HttpHeaders headers = new HttpHeaders();
+    headers.add("User-Agent", "ink-paradise");
+    // Create a RequestEntity with headers
+    RequestEntity<Object> requestEntity =
+        new RequestEntity<>(headers, HttpMethod.GET, URI.create(externalApiUrl));
+    // Make the request
+    return restTemplate.exchange(requestEntity, byte[].class);
+  }
+
+  @GetMapping("/page-image")
+  public ResponseEntity<byte[]> fetchPageImage(
+      @RequestParam(value = "hash", required = true) String hash,
+      @RequestParam(value = "page", required = true) String page) {
+    String externalApiUrl = "https://uploads.mangadex.org/data/" + hash + "/" + page;
+    // Create HttpHeaders and set the User-Agent header
+    HttpHeaders headers = new HttpHeaders();
+    headers.add("User-Agent", "ink-paradise");
+    // Create a RequestEntity with headers
+    RequestEntity<Object> requestEntity =
+        new RequestEntity<>(headers, HttpMethod.GET, URI.create(externalApiUrl));
+    // Make the request
+    return restTemplate.exchange(requestEntity, byte[].class);
   }
 }
