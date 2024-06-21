@@ -36,7 +36,7 @@ public class SecurityConfig {
     configuration.setAllowedOrigins(
         Arrays.asList(
             "http://localhost:5173",
-            "http://3.14.70.63:5173")); // replace with your frontend origin
+            "http://54.167.254.252:5173")); // replace with your frontend origin
     configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
     configuration.setAllowedHeaders(Arrays.asList("*"));
     configuration.setAllowCredentials(true);
