@@ -7,25 +7,25 @@ import lombok.NoArgsConstructor;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "reading", schema = "inkParadise")
+@Table(name = "reading", schema = "ink_paradise")
 public class Reading {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private long id;
 
-  @Column(name = "userId", nullable = false, length = 50)
+  @Column(name = "userId", nullable = false)
   private long userId;
 
-  @Column(name = "mangaId", nullable = false, length = 100)
+  @Column(name = "mangaId", nullable = false)
   private String mangaId;
 
-  @Column(name = "chapter", nullable = false, length = 50)
+  @Column(name = "chapter", nullable = false)
   private long chapter;
 
-  @Column(name = "mangaName", nullable = false, length = 100)
+  @Column(name = "mangaName", nullable = false)
   private String mangaName;
 
-  @Column(name = "timestamp", nullable = false, length = 50)
+  @Column(name = "timestamp", nullable = false)
   private String timestamp;
 
   public long getId() {

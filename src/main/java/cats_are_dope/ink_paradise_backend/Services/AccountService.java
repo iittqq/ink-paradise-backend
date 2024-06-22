@@ -38,9 +38,9 @@ public class AccountService {
     String content =
         "Dear [[name]],<br>"
             + "Please click the link below to verify your registration:<br>"
-            + "<h3><a href=\"[[URL]]\" target=\"_self\">VERIFY</a></h3>"
+            + "<h2><a href=\"[[URL]]\" target=\"_self\">VERIFY</a></h2>"
             + "Thank you,<br>"
-            + "Your company name.";
+            + "ink-paradise.";
 
     MimeMessage message = mailSender.createMimeMessage();
     MimeMessageHelper helper = new MimeMessageHelper(message);

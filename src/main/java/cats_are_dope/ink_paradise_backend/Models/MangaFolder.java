@@ -3,15 +3,20 @@ package cats_are_dope.ink_paradise_backend.Models;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "mangaFolder", schema = "inkParadise")
+@Table(name = "mangaFolder", schema = "ink_paradise")
 public class MangaFolder {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private long folderId;
 
+  @Column(name = "userId", nullable = false)
   private long userId;
+
+  @Column(name = "folderName", nullable = false)
   private String folderName;
+
+  @Column(name = "folderDescription")
   private String folderDescription;
 
   public MangaFolder() {}
@@ -22,7 +27,6 @@ public class MangaFolder {
     this.folderName = folderName;
   }
 
-  @Column(name = "folderId")
   public long getFolderId() {
     return folderId;
   }
@@ -31,7 +35,6 @@ public class MangaFolder {
     this.folderId = newFolderId;
   }
 
-  @Column(name = "userId", nullable = false)
   public long getUserId() {
     return userId;
   }
@@ -40,7 +43,6 @@ public class MangaFolder {
     this.userId = newUserId;
   }
 
-  @Column(name = "folderName", nullable = false, length = 20)
   public String getFolderName() {
     return folderName;
   }
@@ -49,7 +51,6 @@ public class MangaFolder {
     this.folderName = newFolderName;
   }
 
-  @Column(name = "folderDescription", length = 100)
   public String getFolderDescription() {
     return folderDescription;
   }
