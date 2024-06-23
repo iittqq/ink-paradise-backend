@@ -71,7 +71,7 @@ public class AccountController {
       @RequestParam("code") String code, HttpServletResponse httpServletResponse) {
     System.out.println("Code: " + code);
     if (accountService.verify(code)) {
-      httpServletResponse.setHeader("Location", "http://localhost:5173/");
+      httpServletResponse.setHeader("Location", "http://18.117.15.147/");
       httpServletResponse.setStatus(302);
     }
   }
