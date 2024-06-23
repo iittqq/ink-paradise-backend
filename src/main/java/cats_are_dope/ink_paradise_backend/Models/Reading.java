@@ -16,16 +16,16 @@ public class Reading {
   @Column(name = "userId", nullable = false)
   private long userId;
 
-  @Column(name = "mangaId", nullable = false)
+  @Column(name = "mangaId", nullable = false, length = 50)
   private String mangaId;
 
   @Column(name = "chapter", nullable = false)
   private long chapter;
 
-  @Column(name = "mangaName", nullable = false)
+  @Column(name = "mangaName", nullable = false, length = 100)
   private String mangaName;
 
-  @Column(name = "timestamp", nullable = false)
+  @Column(name = "timestamp", nullable = false, length = 50)
   private String timestamp;
 
   public long getId() {

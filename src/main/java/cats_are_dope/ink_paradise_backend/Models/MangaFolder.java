@@ -13,10 +13,10 @@ public class MangaFolder {
   @Column(name = "userId", nullable = false)
   private long userId;
 
-  @Column(name = "folderName", nullable = false)
+  @Column(name = "folderName", nullable = false, length = 50)
   private String folderName;
 
-  @Column(name = "folderDescription")
+  @Column(name = "folderDescription", nullable = true, length = 100)
   private String folderDescription;
 
   public MangaFolder() {}

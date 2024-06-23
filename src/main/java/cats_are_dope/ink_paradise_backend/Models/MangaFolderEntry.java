@@ -9,10 +9,10 @@ public class MangaFolderEntry {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private long uniqueId;
 
-  @Column(name = "folderId")
+  @Column(name = "folderId", nullable = false)
   private long folderId;
 
-  @Column(name = "mangaId", nullable = false)
+  @Column(name = "mangaId", nullable = false, length = 50)
   private String mangaId;
 
   public MangaFolderEntry() {}
