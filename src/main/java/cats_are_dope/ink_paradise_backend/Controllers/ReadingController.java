@@ -53,7 +53,7 @@ public class ReadingController {
 
   @PostMapping("/reading/new")
   public Reading createReading(@Valid @RequestBody Reading reading) {
-    if (reading.getMangaId() == null || reading.getChapter() == 0) {
+    if (reading.getMangaId() == null) {
       throw new IllegalArgumentException("Reading title and author cannot be null");
     }
     return readingRepository.save(reading);

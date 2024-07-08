@@ -6,11 +6,10 @@ import cats_are_dope.ink_paradise_backend.Models.UpdatePasswordRequest;
 import cats_are_dope.ink_paradise_backend.Models.UpdateUsernameRequest;
 import cats_are_dope.ink_paradise_backend.Repositories.AccountRepository;
 import cats_are_dope.ink_paradise_backend.Services.AccountService;
-import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
-import java.io.UnsupportedEncodingException;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -53,7 +52,9 @@ public class AccountController {
 
   @PostMapping("/accounts/new")
   public Account createAccount(@Valid @RequestBody Account account, HttpServletRequest request)
-      throws UnsupportedEncodingException, MessagingException {
+      throws IOException {
+    System.out.println("url: " + getSiteURL(request));
+
     if (account.getEmail() == null || account.getPassword() == null) {
       throw new IllegalArgumentException("Account email, password, and username cannot be null");
     }
@@ -71,7 +72,7 @@ public class AccountController {
       @RequestParam("code") String code, HttpServletResponse httpServletResponse) {
     System.out.println("Code: " + code);
     if (accountService.verify(code)) {
-      httpServletResponse.setHeader("Location", "http://18.117.15.147/");
+      httpServletResponse.setHeader("Location", "https://ink-paradise.com/");
       httpServletResponse.setStatus(302);
     }
   }

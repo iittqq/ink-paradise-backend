@@ -34,9 +34,7 @@ public class SecurityConfig {
   public CorsConfigurationSource corsConfigurationSource() {
     CorsConfiguration configuration = new CorsConfiguration();
     configuration.setAllowedOrigins(
-        Arrays.asList(
-            "http://localhost:5173",
-            "http://18.117.15.147:5173")); // replace with your frontend origin
+        Arrays.asList("https://ink-paradise.com")); // replace with your frontend origin
     configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
     configuration.setAllowedHeaders(Arrays.asList("*"));
     configuration.setAllowCredentials(true);

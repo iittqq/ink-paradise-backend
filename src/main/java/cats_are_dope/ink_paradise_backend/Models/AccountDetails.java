@@ -30,6 +30,9 @@ public class AccountDetails {
   @Column(name = "contentFilter", nullable = false)
   private long contentFilter;
 
+  @Column(name = "readerMode", nullable = false)
+  private long readerMode;
+
   public long getId() {
     return id;
   }
@@ -76,5 +79,13 @@ public class AccountDetails {
 
   public void setContentFilter(long newContentFilter) {
     this.contentFilter = newContentFilter;
+  }
+
+  public long getReaderMode() {
+    return readerMode;
+  }
+
+  public void setReaderMode(long newReaderMode) {
+    this.readerMode = newReaderMode;
   }
 }

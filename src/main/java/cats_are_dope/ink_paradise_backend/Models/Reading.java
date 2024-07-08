@@ -1,6 +1,7 @@
 package cats_are_dope.ink_paradise_backend.Models;
 
 import jakarta.persistence.*;
+import java.math.BigDecimal;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 
@@ -19,8 +20,8 @@ public class Reading {
   @Column(name = "mangaId", nullable = false, length = 50)
   private String mangaId;
 
-  @Column(name = "chapter", nullable = false)
-  private long chapter;
+  @Column(name = "chapter", nullable = false, precision = 15, scale = 2)
+  private BigDecimal chapter;
 
   @Column(name = "mangaName", nullable = false, length = 100)
   private String mangaName;
@@ -52,11 +53,11 @@ public class Reading {
     this.mangaId = newMangaId;
   }
 
-  public long getChapter() {
+  public BigDecimal getChapter() {
     return chapter;
   }
 
-  public void setChapter(long newChapter) {
+  public void setChapter(BigDecimal newChapter) {
     this.chapter = newChapter;
   }
 

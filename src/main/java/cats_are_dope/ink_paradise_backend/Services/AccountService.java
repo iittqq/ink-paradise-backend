@@ -2,23 +2,27 @@ package cats_are_dope.ink_paradise_backend.Services;
 
 import cats_are_dope.ink_paradise_backend.Models.Account;
 import cats_are_dope.ink_paradise_backend.Repositories.AccountRepository;
-import jakarta.mail.MessagingException;
-import jakarta.mail.internet.MimeMessage;
-import java.io.UnsupportedEncodingException;
+import com.sendgrid.Content;
+import com.sendgrid.Email;
+import com.sendgrid.Mail;
+import com.sendgrid.Method;
+import com.sendgrid.Request;
+import com.sendgrid.Response;
+import com.sendgrid.SendGrid;
+import java.io.IOException;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 @Service
 public class AccountService {
   @Autowired private AccountRepository accountRepository;
 
-  @Autowired private JavaMailSender mailSender;
+  @Value("${sendgrid.api.key}")
+  private String sendGridApiKey;
 
-  public void registerAccount(Account account, String siteUrl)
-      throws UnsupportedEncodingException, MessagingException {
+  public void registerAccount(Account account, String siteUrl) throws IOException {
 
     String randomCode = RandomStringUtils.randomAlphanumeric(64);
 
@@ -26,37 +30,37 @@ public class AccountService {
     account.setVerified(false);
     accountRepository.save(account);
 
-    sendVerificationEmail(account, siteUrl);
+    Email from = new Email("mail@ink-paradise.com");
+    String subject = "Email Verification";
+    Email to = new Email(account.getEmail());
+    Content content = new Content("text/html", buildEmailContent(siteUrl, account));
+    Mail mail = new Mail(from, subject, to, content);
+
+    SendGrid sg = new SendGrid(sendGridApiKey);
+    Request request = new Request();
+    try {
+      request.setMethod(Method.POST);
+      request.setEndpoint("mail/send");
+      request.setBody(mail.build());
+      Response response = sg.api(request);
+      System.out.println(response.getStatusCode());
+      System.out.println(response.getBody());
+      System.out.println(response.getHeaders());
+    } catch (IOException ex) {
+      throw ex;
+    }
   }
 
-  private void sendVerificationEmail(Account account, String siteUrl)
-      throws MessagingException, UnsupportedEncodingException {
-    String toAddress = account.getEmail();
-    String fromAddress = "inkparadisemailservice@gmail.com";
-    String senderName = "Ink Paradise";
-    String subject = "Please verify your registration";
-    String content =
-        "Dear [[name]],<br>"
-            + "Please click the link below to verify your registration:<br>"
-            + "<h2><a href=\"[[URL]]\" target=\"_self\">VERIFY</a></h2>"
-            + "Thank you,<br>"
-            + "ink-paradise.";
-
-    MimeMessage message = mailSender.createMimeMessage();
-    MimeMessageHelper helper = new MimeMessageHelper(message);
-
-    helper.setFrom(fromAddress, senderName);
-    helper.setTo(toAddress);
-    helper.setSubject(subject);
-
-    content = content.replace("[[name]]", account.getUsername());
-    String verifyURL = siteUrl + "/api/v1/accounts/verify?code=" + account.getVerificationCode();
-
-    content = content.replace("[[URL]]", verifyURL);
-
-    helper.setText(content, true);
-
-    mailSender.send(message);
+  private String buildEmailContent(String url, Account account) {
+    return "Dear "
+        + account.getUsername()
+        + ",<br>"
+        + "Please click the link below to verify your registration:<br>"
+        + "<h2><a href=\"https://ink-paradise-api.com/api/v1/accounts/verify?code="
+        + account.getVerificationCode()
+        + "\" target=\"_self\">VERIFY</a></h2>"
+        + "Thank you,<br>"
+        + "ink-paradise.";
   }
 
   public boolean verify(String verificationCode) {

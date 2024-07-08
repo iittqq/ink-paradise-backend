@@ -15,8 +15,7 @@ public class CorsConfig {
       public void addCorsMappings(CorsRegistry registry) {
         registry
             .addMapping("/**")
-            .allowedOrigins("http://localhost:5173") // Replace with your React frontend URL
-            .allowedOrigins("http://18.117.15.147:5173")
+            .allowedOrigins("https://ink-paradise.com")
             .allowedMethods("GET", "POST", "PUT", "DELETE")
             .allowedHeaders("*")
             .allowCredentials(true);
