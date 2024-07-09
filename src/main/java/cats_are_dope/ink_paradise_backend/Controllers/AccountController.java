@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -50,6 +51,8 @@ public class AccountController {
 
   @Autowired private AccountService accountService;
 
+  @Autowired private PasswordEncoder passwordEncoder;
+
   @PostMapping("/accounts/new")
   public Account createAccount(@Valid @RequestBody Account account, HttpServletRequest request)
       throws IOException {
@@ -58,6 +61,8 @@ public class AccountController {
     if (account.getEmail() == null || account.getPassword() == null) {
       throw new IllegalArgumentException("Account email, password, and username cannot be null");
     }
+    account.setPassword(passwordEncoder.encode(account.getPassword()));
+
     accountService.registerAccount(account, getSiteURL(request));
     return accountRepository.save(account);
   }
@@ -78,11 +83,16 @@ public class AccountController {
   }
 
   @PostMapping("/accounts/login")
-  public Account login(@RequestBody LoginRequest loginRequest) {
+  public long login(@RequestBody LoginRequest loginRequest) {
     String email = loginRequest.getEmail();
     String password = loginRequest.getPassword();
 
-    return accountService.findAccountByEmailAndPassword(email, password);
+    Account account = accountService.findAccountByEmail(email);
+    if (passwordEncoder.matches(password, account.getPassword())) {
+      return account.getId();
+    } else {
+      return -1;
+    }
   }
 
   @PutMapping("/accounts/update/{id}")
@@ -133,8 +143,9 @@ public class AccountController {
             .findById(accountDetails.getId())
             .orElseThrow(
                 () -> new Exception("Account not found for this id :: " + accountDetails.getId()));
-    if (account.getPassword().equals(accountDetails.getOldPassword())) {
-      account.setPassword(accountDetails.getNewPassword());
+    if (passwordEncoder.matches(accountDetails.getOldPassword(), account.getPassword())) {
+      account.setPassword(passwordEncoder.encode(accountDetails.getNewPassword()));
+
       final Account updatedAccount = accountRepository.save(account);
       return ResponseEntity.ok(updatedAccount);
     } else {

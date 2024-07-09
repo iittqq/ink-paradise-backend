@@ -7,7 +7,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface AccountRepository extends JpaRepository<Account, Long> {
   // Add custom query methods here if needed
-  Account findByEmailAndPassword(String email, String password);
+  Account findByEmail(String email);
 
   Account findByVerificationCode(String code);
 }

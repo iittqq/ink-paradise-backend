@@ -75,7 +75,7 @@ public class AccountService {
     }
   }
 
-  public Account findAccountByEmailAndPassword(String email, String password) {
-    return accountRepository.findByEmailAndPassword(email, password);
+  public Account findAccountByEmail(String email) {
+    return accountRepository.findByEmail(email);
   }
 }
