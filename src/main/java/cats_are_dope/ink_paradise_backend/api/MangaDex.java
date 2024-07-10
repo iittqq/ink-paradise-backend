@@ -103,7 +103,7 @@ public class MangaDex {
             + "&includes[]=cover_art"
             + "&title="
             + title.replaceAll(" ", "+")
-            + "&order[relevance]=desc";
+            + "&order[rating]=desc";
     // Create HttpHeaders and set the User-Agent header
     HttpHeaders headers = new HttpHeaders();
     headers.add("User-Agent", "ink-paradise");

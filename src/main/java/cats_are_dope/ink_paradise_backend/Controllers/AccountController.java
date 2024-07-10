@@ -88,7 +88,7 @@ public class AccountController {
     String password = loginRequest.getPassword();
 
     Account account = accountService.findAccountByEmail(email);
-    if (passwordEncoder.matches(password, account.getPassword())) {
+    if (account != null && passwordEncoder.matches(password, account.getPassword())) {
       return account.getId();
     } else {
       return -1;
