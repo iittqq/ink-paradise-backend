@@ -297,6 +297,20 @@ public class MangaDex {
     return restTemplate.exchange(requestEntity, String.class).getBody();
   }
 
+  @GetMapping("/chapter-details")
+  public String fetchChapterDetails(@RequestParam(value = "id", required = true) String id) {
+    String externalApiUrl =
+        "https://api.mangadex.org/chapter/" + id + "?includes[]=scanlation_group";
+    // Create HttpHeaders and set the User-Agent header
+    HttpHeaders headers = new HttpHeaders();
+    headers.add("User-Agent", "ink-paradise");
+    // Create a RequestEntity with headers
+    RequestEntity<Object> requestEntity =
+        new RequestEntity<>(headers, HttpMethod.GET, URI.create(externalApiUrl));
+    // Make the request
+    return restTemplate.exchange(requestEntity, String.class).getBody();
+  }
+
   @GetMapping("/cover-image")
   public ResponseEntity<byte[]> fetchCoverImage(
       @RequestParam(value = "id", required = true) String id,
