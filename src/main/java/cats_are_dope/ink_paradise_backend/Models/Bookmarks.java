@@ -29,6 +29,9 @@ public class Bookmarks {
   @Column(name = "chapterId", nullable = false)
   private String chapterId;
 
+  @Column(name = "chapterIndex", nullable = false)
+  private long chapterIndex;
+
   @Column(name = "continueReading", nullable = true)
   private boolean continueReading;
 
@@ -78,6 +81,14 @@ public class Bookmarks {
 
   public void setChapterId(String newChapterId) {
     this.chapterId = newChapterId;
+  }
+
+  public long getChapterIndex() {
+    return chapterIndex;
+  }
+
+  public void setChapterIndex(long newChapterIndex) {
+    this.chapterIndex = newChapterIndex;
   }
 
   public boolean getContinueReading() {

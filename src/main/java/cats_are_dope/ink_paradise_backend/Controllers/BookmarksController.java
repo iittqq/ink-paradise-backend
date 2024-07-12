@@ -70,6 +70,7 @@ public class BookmarksController {
     bookmark.setMangaId(bookmarkDetails.getMangaId());
     bookmark.setChapterId(bookmarkDetails.getChapterId());
     bookmark.setMangaName(bookmarkDetails.getMangaName());
+    bookmark.setChapterIndex(bookmarkDetails.getChapterIndex());
     bookmark.setChapterNumber(bookmarkDetails.getChapterNumber());
     final Bookmarks updatedBookmark = bookmarksRepository.save(bookmark);
     return ResponseEntity.ok(updatedBookmark);
