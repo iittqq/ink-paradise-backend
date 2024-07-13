@@ -63,6 +63,43 @@ public class AccountService {
         + "ink-paradise.";
   }
 
+  public void resetPassword(Account account, String siteUrl) throws IOException {
+    String randomCode = RandomStringUtils.randomAlphanumeric(64);
+    account.setVerificationCode(randomCode);
+    accountRepository.save(account);
+    Email from = new Email("mail@ink-paradise.com");
+    String subject = "Password Reset";
+    Email to = new Email(account.getEmail());
+    Content content = new Content("text/html", buildPasswordResetEmail(siteUrl, account));
+    Mail mail = new Mail(from, subject, to, content);
+
+    SendGrid sg = new SendGrid(sendGridApiKey);
+    Request request = new Request();
+    try {
+      request.setMethod(Method.POST);
+      request.setEndpoint("mail/send");
+      request.setBody(mail.build());
+      Response response = sg.api(request);
+      System.out.println(response.getStatusCode());
+      System.out.println(response.getBody());
+      System.out.println(response.getHeaders());
+    } catch (IOException ex) {
+      throw ex;
+    }
+  }
+
+  private String buildPasswordResetEmail(String url, Account account) {
+    return "Dear "
+        + account.getUsername()
+        + ",<br>"
+        + "Please click the link below to reset your password:<br>"
+        + "<h2><a href=\"https://ink-paradise.com/reset/password/"
+        + account.getEmail()
+        + "\" target=\"_self\">RESET PASSWORD</a></h2>"
+        + "Thank you,<br>"
+        + "ink-paradise.";
+  }
+
   public boolean verify(String verificationCode) {
     Account account = accountRepository.findByVerificationCode(verificationCode);
     System.out.println(account);

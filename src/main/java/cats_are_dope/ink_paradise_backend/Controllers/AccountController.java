@@ -95,6 +95,11 @@ public class AccountController {
     }
   }
 
+  @GetMapping("/accounts/email/{email}")
+  public Account getAccountByEmail(@PathVariable(value = "email") String email) {
+    return accountRepository.findByEmail(email);
+  }
+
   @PutMapping("/accounts/update/{id}")
   public ResponseEntity<Account> updateAccount(
       @PathVariable(value = "id") Long accountId, @Valid @RequestBody Account accountDetails)
@@ -108,7 +113,7 @@ public class AccountController {
             .orElseThrow(() -> new Exception("Account not found for this id :: " + accountId));
 
     account.setEmail(accountDetails.getEmail());
-    account.setPassword(accountDetails.getPassword());
+    account.setPassword(passwordEncoder.encode(accountDetails.getPassword()));
     account.setUsername(accountDetails.getUsername());
     final Account updatedAccount = accountRepository.save(account);
     return ResponseEntity.ok(updatedAccount);
@@ -172,5 +177,14 @@ public class AccountController {
     Map<String, Boolean> response = new HashMap<>();
     response.put("deleted", Boolean.TRUE);
     return response;
+  }
+
+  @GetMapping("/accounts/reset/password/{email}")
+  public void resetPassword(@PathVariable(value = "email") String email, HttpServletRequest request)
+      throws IOException {
+    Account account = accountService.findAccountByEmail(email);
+    if (account != null) {
+      accountService.resetPassword(account, getSiteURL(request));
+    }
   }
 }
