@@ -72,6 +72,11 @@ public class BookmarksController {
     bookmark.setMangaName(bookmarkDetails.getMangaName());
     bookmark.setChapterIndex(bookmarkDetails.getChapterIndex());
     bookmark.setChapterNumber(bookmarkDetails.getChapterNumber());
+
+    if (bookmarkDetails.getContinueReading() != true) {
+      bookmark.setPageNumber(bookmarkDetails.getPageNumber());
+    }
+
     final Bookmarks updatedBookmark = bookmarksRepository.save(bookmark);
     return ResponseEntity.ok(updatedBookmark);
   }
