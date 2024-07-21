@@ -56,6 +56,7 @@ public class AccountDetailsController {
     account.setProfilePicture(accountDetails.getProfilePicture());
     account.setHeaderPicture(accountDetails.getHeaderPicture());
     account.setReaderMode(accountDetails.getReaderMode());
+    account.setTheme(accountDetails.getTheme());
     final AccountDetails updatedAccountDetails = accountDetailsRepository.save(account);
     return ResponseEntity.ok(updatedAccountDetails);
   }

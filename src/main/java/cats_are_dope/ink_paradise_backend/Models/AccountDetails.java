@@ -33,6 +33,9 @@ public class AccountDetails {
   @Column(name = "readerMode", nullable = false)
   private long readerMode;
 
+  @Column(name = "theme", nullable = false)
+  private long theme;
+
   public long getId() {
     return id;
   }
@@ -87,5 +90,13 @@ public class AccountDetails {
 
   public void setReaderMode(long newReaderMode) {
     this.readerMode = newReaderMode;
+  }
+
+  public long getTheme() {
+    return theme;
+  }
+
+  public void setTheme(long newTheme) {
+    this.theme = newTheme;
   }
 }
