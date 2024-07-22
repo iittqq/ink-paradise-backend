@@ -20,22 +20,23 @@ import org.springframework.web.client.RestTemplate;
 @CrossOrigin
 @RequestMapping("/manga-dex")
 public class MangaDex {
-  @Autowired private RestTemplate restTemplate = new RestTemplate();
+  @Autowired
+  private RestTemplate restTemplate = new RestTemplate();
 
   @GetMapping("/recently-updated")
-  public String fetchRecentlyUpdated(@RequestParam(value = "limit", required = true) Number limit) {
-    String externalApiUrl =
-        "https://api.mangadex.org/manga?limit="
-            + limit
-            + "&order[latestUploadedChapter]=desc&includes[]=cover_art";
+  public String fetchRecentlyUpdated(@RequestParam(value = "limit", required = true) Number limit,
+      @RequestParam(value = "offset", required = false) Number offset) {
+    String externalApiUrl = "https://api.mangadex.org/manga?limit="
+        + limit
+        + "&offset=" + offset
+        + "&order[latestUploadedChapter]=desc&includes[]=cover_art";
 
     // Create HttpHeaders and set the User-Agent header
     HttpHeaders headers = new HttpHeaders();
     headers.add("User-Agent", "ink-paradise");
 
     // Create a RequestEntity with headers
-    RequestEntity<Object> requestEntity =
-        new RequestEntity<>(headers, HttpMethod.GET, URI.create(externalApiUrl));
+    RequestEntity<Object> requestEntity = new RequestEntity<>(headers, HttpMethod.GET, URI.create(externalApiUrl));
 
     // Make the request
     return restTemplate.exchange(requestEntity, String.class).getBody();
@@ -45,19 +46,17 @@ public class MangaDex {
   public String fetchRecentlyAdded(
       @RequestParam(value = "limit", required = true) Number limit,
       @RequestParam(value = "offset", required = false) Number offset) {
-    String externalApiUrl =
-        "https://api.mangadex.org/manga?limit="
-            + limit
-            + "&offset="
-            + offset
-            + "&order[createdAt]=desc&includes[]=cover_art";
+    String externalApiUrl = "https://api.mangadex.org/manga?limit="
+        + limit
+        + "&offset="
+        + offset
+        + "&order[createdAt]=desc&includes[]=cover_art";
     // Create HttpHeaders and set the User-Agent header
     HttpHeaders headers = new HttpHeaders();
     headers.add("User-Agent", "ink-paradise");
 
     // Create a RequestEntity with headers
-    RequestEntity<Object> requestEntity =
-        new RequestEntity<>(headers, HttpMethod.GET, URI.create(externalApiUrl));
+    RequestEntity<Object> requestEntity = new RequestEntity<>(headers, HttpMethod.GET, URI.create(externalApiUrl));
 
     // Make the request
     return restTemplate.exchange(requestEntity, String.class).getBody();
@@ -71,8 +70,7 @@ public class MangaDex {
     headers.add("User-Agent", "ink-paradise");
 
     // Create a RequestEntity with headers
-    RequestEntity<Object> requestEntity =
-        new RequestEntity<>(headers, HttpMethod.GET, URI.create(externalApiUrl));
+    RequestEntity<Object> requestEntity = new RequestEntity<>(headers, HttpMethod.GET, URI.create(externalApiUrl));
 
     // Make the request
     return restTemplate.exchange(requestEntity, String.class).getBody();
@@ -86,8 +84,7 @@ public class MangaDex {
     headers.add("User-Agent", "ink-paradise");
 
     // Create a RequestEntity with headers
-    RequestEntity<Object> requestEntity =
-        new RequestEntity<>(headers, HttpMethod.GET, URI.create(externalApiUrl));
+    RequestEntity<Object> requestEntity = new RequestEntity<>(headers, HttpMethod.GET, URI.create(externalApiUrl));
 
     // Make the request
     return restTemplate.exchange(requestEntity, String.class).getBody();
@@ -97,20 +94,18 @@ public class MangaDex {
   public String fetchMangaByTitle(
       @RequestParam(value = "limit", required = true) Number limit,
       @RequestParam(value = "title", required = true) String title) {
-    String externalApiUrl =
-        "https://api.mangadex.org/manga/?limit="
-            + limit
-            + "&includes[]=cover_art"
-            + "&title="
-            + title.replaceAll(" ", "+")
-            + "&order[rating]=desc";
+    String externalApiUrl = "https://api.mangadex.org/manga/?limit="
+        + limit
+        + "&includes[]=cover_art"
+        + "&title="
+        + title.replaceAll(" ", "+")
+        + "&order[rating]=desc";
     // Create HttpHeaders and set the User-Agent header
     HttpHeaders headers = new HttpHeaders();
     headers.add("User-Agent", "ink-paradise");
 
     // Create a RequestEntity with headers
-    RequestEntity<Object> requestEntity =
-        new RequestEntity<>(headers, HttpMethod.GET, URI.create(externalApiUrl));
+    RequestEntity<Object> requestEntity = new RequestEntity<>(headers, HttpMethod.GET, URI.create(externalApiUrl));
 
     // Make the request
     return restTemplate.exchange(requestEntity, String.class).getBody();
@@ -135,8 +130,8 @@ public class MangaDex {
       headers.add("User-Agent", "ink-paradise");
 
       // Create a RequestEntity with headers
-      RequestEntity<Object> requestEntity =
-          new RequestEntity<>(headers, HttpMethod.GET, URI.create(externalApiUrl.toString()));
+      RequestEntity<Object> requestEntity = new RequestEntity<>(headers, HttpMethod.GET,
+          URI.create(externalApiUrl.toString()));
 
       // Make the request
       return restTemplate.exchange(requestEntity, String.class).getBody();
@@ -156,8 +151,7 @@ public class MangaDex {
     headers.add("User-Agent", "ink-paradise");
 
     // Create a RequestEntity with headers
-    RequestEntity<Object> requestEntity =
-        new RequestEntity<>(headers, HttpMethod.GET, URI.create(externalApiUrl));
+    RequestEntity<Object> requestEntity = new RequestEntity<>(headers, HttpMethod.GET, URI.create(externalApiUrl));
 
     // Make the request
     return restTemplate.exchange(requestEntity, String.class).getBody();
@@ -170,25 +164,23 @@ public class MangaDex {
       @RequestParam(value = "offset", required = true) Number offset,
       @RequestParam(value = "order", required = true) String order,
       @RequestParam(value = "translatedLanguage", required = true) String translatedLanguage) {
-    String externalApiUrl =
-        "https://api.mangadex.org/manga/"
-            + id
-            + "/feed?limit="
-            + limit
-            + "&offset="
-            + offset
-            + "&translatedLanguage[]="
-            + translatedLanguage
-            + "&includes[]=scanlation_group"
-            + "&order[chapter]="
-            + order;
+    String externalApiUrl = "https://api.mangadex.org/manga/"
+        + id
+        + "/feed?limit="
+        + limit
+        + "&offset="
+        + offset
+        + "&translatedLanguage[]="
+        + translatedLanguage
+        + "&includes[]=scanlation_group"
+        + "&order[chapter]="
+        + order;
     // Create HttpHeaders and set the User-Agent header
     HttpHeaders headers = new HttpHeaders();
     headers.add("User-Agent", "ink-paradise");
 
     // Create a RequestEntity with headers
-    RequestEntity<Object> requestEntity =
-        new RequestEntity<>(headers, HttpMethod.GET, URI.create(externalApiUrl));
+    RequestEntity<Object> requestEntity = new RequestEntity<>(headers, HttpMethod.GET, URI.create(externalApiUrl));
 
     // Make the request
     return restTemplate.exchange(requestEntity, String.class).getBody();
@@ -197,12 +189,18 @@ public class MangaDex {
   @GetMapping("/manga-similar")
   public String fetchMangaSimilar(
       @RequestParam(value = "limit", required = true) Number limit,
+      @RequestParam(value = "offset", required = false) Number offset,
       @RequestParam(value = "tags", required = true) String[] tags) {
     try {
       StringBuilder externalApiUrl = new StringBuilder("https://api.mangadex.org/manga?");
       externalApiUrl
           .append("limit=")
           .append(URLEncoder.encode(limit.toString(), StandardCharsets.UTF_8.toString()));
+
+      externalApiUrl
+          .append("&offset=")
+          .append(URLEncoder.encode(offset.toString(), StandardCharsets.UTF_8.toString()));
+
       externalApiUrl.append("&includedTagsMode=AND&order[rating]=desc&includes[]=cover_art");
       for (String tag : tags) {
         externalApiUrl
@@ -213,8 +211,8 @@ public class MangaDex {
       HttpHeaders headers = new HttpHeaders();
       headers.add("User-Agent", "ink-paradise");
       // Create a RequestEntity with headers
-      RequestEntity<Object> requestEntity =
-          new RequestEntity<>(headers, HttpMethod.GET, URI.create(externalApiUrl.toString()));
+      RequestEntity<Object> requestEntity = new RequestEntity<>(headers, HttpMethod.GET,
+          URI.create(externalApiUrl.toString()));
       // Make the request
       return restTemplate.exchange(requestEntity, String.class).getBody();
     } catch (UnsupportedEncodingException e) {
@@ -227,17 +225,15 @@ public class MangaDex {
 
   @GetMapping("/popular-manga")
   public String fetchPopularManga(@RequestParam(value = "limit", required = true) Number limit) {
-    String externalApiUrl =
-        "https://api.mangadex.org/manga?limit="
-            + limit
-            + "&includes[]=cover_art"
-            + "&order[rating]=desc";
+    String externalApiUrl = "https://api.mangadex.org/manga?limit="
+        + limit
+        + "&includes[]=cover_art"
+        + "&order[rating]=desc";
     // Create HttpHeaders and set the User-Agent header
     HttpHeaders headers = new HttpHeaders();
     headers.add("User-Agent", "ink-paradise");
     // Create a RequestEntity with headers
-    RequestEntity<Object> requestEntity =
-        new RequestEntity<>(headers, HttpMethod.GET, URI.create(externalApiUrl));
+    RequestEntity<Object> requestEntity = new RequestEntity<>(headers, HttpMethod.GET, URI.create(externalApiUrl));
     // Make the request
     return restTemplate.exchange(requestEntity, String.class).getBody();
   }
@@ -250,8 +246,7 @@ public class MangaDex {
     headers.add("User-Agent", "ink-paradise");
 
     // Create a RequestEntity with headers
-    RequestEntity<Object> requestEntity =
-        new RequestEntity<>(headers, HttpMethod.GET, URI.create(externalApiUrl));
+    RequestEntity<Object> requestEntity = new RequestEntity<>(headers, HttpMethod.GET, URI.create(externalApiUrl));
 
     // Make the request
     return restTemplate.exchange(requestEntity, String.class).getBody();
@@ -262,21 +257,19 @@ public class MangaDex {
       @RequestParam(value = "id", required = true) String id,
       @RequestParam(value = "limit", required = true) Number limit,
       @RequestParam(value = "offset", required = true) Number offset) {
-    String externalApiUrl =
-        "https://api.mangadex.org/manga?limit="
-            + limit
-            + "&offset="
-            + offset
-            + "&authors[]="
-            + id
-            + "&order[relevance]=desc";
+    String externalApiUrl = "https://api.mangadex.org/manga?limit="
+        + limit
+        + "&offset="
+        + offset
+        + "&authors[]="
+        + id
+        + "&order[relevance]=desc";
     // Create HttpHeaders and set the User-Agent header
     HttpHeaders headers = new HttpHeaders();
     headers.add("User-Agent", "ink-paradise");
 
     // Create a RequestEntity with headers
-    RequestEntity<Object> requestEntity =
-        new RequestEntity<>(headers, HttpMethod.GET, URI.create(externalApiUrl));
+    RequestEntity<Object> requestEntity = new RequestEntity<>(headers, HttpMethod.GET, URI.create(externalApiUrl));
 
     // Make the request
     return restTemplate.exchange(requestEntity, String.class).getBody();
@@ -290,8 +283,7 @@ public class MangaDex {
     headers.add("User-Agent", "ink-paradise");
 
     // Create a RequestEntity with headers
-    RequestEntity<Object> requestEntity =
-        new RequestEntity<>(headers, HttpMethod.GET, URI.create(externalApiUrl));
+    RequestEntity<Object> requestEntity = new RequestEntity<>(headers, HttpMethod.GET, URI.create(externalApiUrl));
 
     // Make the request
     return restTemplate.exchange(requestEntity, String.class).getBody();
@@ -299,14 +291,12 @@ public class MangaDex {
 
   @GetMapping("/chapter-details")
   public String fetchChapterDetails(@RequestParam(value = "id", required = true) String id) {
-    String externalApiUrl =
-        "https://api.mangadex.org/chapter/" + id + "?includes[]=scanlation_group";
+    String externalApiUrl = "https://api.mangadex.org/chapter/" + id + "?includes[]=scanlation_group";
     // Create HttpHeaders and set the User-Agent header
     HttpHeaders headers = new HttpHeaders();
     headers.add("User-Agent", "ink-paradise");
     // Create a RequestEntity with headers
-    RequestEntity<Object> requestEntity =
-        new RequestEntity<>(headers, HttpMethod.GET, URI.create(externalApiUrl));
+    RequestEntity<Object> requestEntity = new RequestEntity<>(headers, HttpMethod.GET, URI.create(externalApiUrl));
     // Make the request
     return restTemplate.exchange(requestEntity, String.class).getBody();
   }
@@ -320,8 +310,7 @@ public class MangaDex {
     HttpHeaders headers = new HttpHeaders();
     headers.add("User-Agent", "ink-paradise");
     // Create a RequestEntity with headers
-    RequestEntity<Object> requestEntity =
-        new RequestEntity<>(headers, HttpMethod.GET, URI.create(externalApiUrl));
+    RequestEntity<Object> requestEntity = new RequestEntity<>(headers, HttpMethod.GET, URI.create(externalApiUrl));
     // Make the request
     return restTemplate.exchange(requestEntity, byte[].class);
   }
@@ -335,8 +324,7 @@ public class MangaDex {
     HttpHeaders headers = new HttpHeaders();
     headers.add("User-Agent", "ink-paradise");
     // Create a RequestEntity with headers
-    RequestEntity<Object> requestEntity =
-        new RequestEntity<>(headers, HttpMethod.GET, URI.create(externalApiUrl));
+    RequestEntity<Object> requestEntity = new RequestEntity<>(headers, HttpMethod.GET, URI.create(externalApiUrl));
     // Make the request
     return restTemplate.exchange(requestEntity, byte[].class);
   }

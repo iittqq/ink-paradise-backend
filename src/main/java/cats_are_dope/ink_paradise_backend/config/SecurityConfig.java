@@ -26,7 +26,8 @@ public class SecurityConfig {
     http.cors(cors -> cors.configurationSource(corsConfigurationSource()))
         .csrf(csrf -> csrf.disable())
         .authorizeHttpRequests(auth -> auth.anyRequest().permitAll())
-        .httpBasic(httpBasic -> {});
+        .httpBasic(httpBasic -> {
+        });
     return http.build();
   }
 
@@ -34,7 +35,7 @@ public class SecurityConfig {
   public CorsConfigurationSource corsConfigurationSource() {
     CorsConfiguration configuration = new CorsConfiguration();
     configuration.setAllowedOrigins(
-        Arrays.asList("https://ink-paradise.com", "http://localhost:5173"));
+        Arrays.asList("https://ink-paradise.com"));
     configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
     configuration.setAllowedHeaders(Arrays.asList("*"));
     configuration.setAllowCredentials(true);

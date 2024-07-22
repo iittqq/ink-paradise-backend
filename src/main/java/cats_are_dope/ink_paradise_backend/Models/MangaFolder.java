@@ -19,6 +19,9 @@ public class MangaFolder {
   @Column(name = "folderDescription", nullable = true, length = 100)
   private String folderDescription;
 
+  @Column(name = "folderCover", nullable = true, length = 1000)
+  private String folderCover;
+
   public MangaFolder() {}
 
   public MangaFolder(long folderId, long userId, String folderName) {
@@ -57,5 +60,13 @@ public class MangaFolder {
 
   public void setFolderDescription(String newFolderDescription) {
     this.folderDescription = newFolderDescription;
+  }
+
+  public String getFolderCover() {
+    return folderCover;
+  }
+
+  public void setFolderCover(String newFolderCover) {
+    this.folderCover = newFolderCover;
   }
 }
