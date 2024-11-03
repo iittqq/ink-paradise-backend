@@ -16,6 +16,7 @@ public class CorsConfig {
         registry
             .addMapping("/**")
             .allowedOrigins("https://ink-paradise.com")
+            .allowedOrigins("http://localhost:5173")
             .allowedMethods("GET", "POST", "PUT", "DELETE")
             .allowedHeaders("*")
             .allowCredentials(true);

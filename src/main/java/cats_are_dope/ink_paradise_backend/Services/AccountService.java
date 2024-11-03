@@ -115,4 +115,10 @@ public class AccountService {
   public Account findAccountByEmail(String email) {
     return accountRepository.findByEmail(email);
   }
+
+  public Account findAccountById(Long id) {
+    return accountRepository
+        .findById(id)
+        .orElseThrow(() -> new IllegalArgumentException("Account not found with ID: " + id));
+  }
 }

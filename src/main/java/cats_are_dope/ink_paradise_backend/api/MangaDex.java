@@ -37,7 +37,7 @@ public class MangaDex {
                   + limit
                   + "&offset="
                   + offset
-                  + "&order[latestUploadedChapter]=desc&includes[]=cover_art&contentRating[]=safe";
+                  + "&order[latestUploadedChapter]=desc&includes[]=cover_art&includes[]=author&contentRating[]=safe";
           break;
         }
       case 2:
@@ -47,7 +47,7 @@ public class MangaDex {
                   + limit
                   + "&offset="
                   + offset
-                  + "&order[latestUploadedChapter]=desc&includes[]=cover_art&contentRating[]=safe&contentRating[]=suggestive";
+                  + "&order[latestUploadedChapter]=desc&includes[]=cover_art&includes[]=author&contentRating[]=safe&contentRating[]=suggestive";
           break;
         }
       case 3:
@@ -57,7 +57,7 @@ public class MangaDex {
                   + limit
                   + "&offset="
                   + offset
-                  + "&order[latestUploadedChapter]=desc&includes[]=cover_art&contentRating[]=safe&contentRating[]=suggestive&contentRating[]=erotica";
+                  + "&order[latestUploadedChapter]=desc&includes[]=cover_art&includes[]=author&contentRating[]=safe&contentRating[]=suggestive&contentRating[]=erotica";
           break;
         }
       case 4:
@@ -67,7 +67,7 @@ public class MangaDex {
                   + limit
                   + "&offset="
                   + offset
-                  + "&order[latestUploadedChapter]=desc&includes[]=cover_art&contentRating[]=safe&contentRating[]=suggestive&contentRating[]=erotica&contentRating[]=pornographic";
+                  + "&order[latestUploadedChapter]=desc&includes[]=cover_art&includes[]=author&contentRating[]=safe&contentRating[]=suggestive&contentRating[]=erotica&contentRating[]=pornographic";
           break;
         }
     }
@@ -104,7 +104,7 @@ public class MangaDex {
                 + limit
                 + "&offset="
                 + offset
-                + "&order[createdAt]=desc&includes[]=cover_art&contentRating[]=safe";
+                + "&order[createdAt]=desc&includes[]=cover_art&includes[]=author&contentRating[]=safe";
         break;
       case 2:
         externalApiUrl =
@@ -112,7 +112,7 @@ public class MangaDex {
                 + limit
                 + "&offset="
                 + offset
-                + "&order[createdAt]=desc&includes[]=cover_art&contentRating[]=safe&contentRating[]=suggestive";
+                + "&order[createdAt]=desc&includes[]=cover_art&includes[]=author&contentRating[]=safe&contentRating[]=suggestive";
         break;
       case 3:
         externalApiUrl =
@@ -120,7 +120,7 @@ public class MangaDex {
                 + limit
                 + "&offset="
                 + offset
-                + "&order[createdAt]=desc&includes[]=cover_art&contentRating[]=safe&contentRating[]=suggestive&contentRating[]=erotica";
+                + "&order[createdAt]=desc&includes[]=cover_art&includes[]=author&contentRating[]=safe&contentRating[]=suggestive&contentRating[]=erotica";
         break;
       case 4:
         externalApiUrl =
@@ -128,7 +128,7 @@ public class MangaDex {
                 + limit
                 + "&offset="
                 + offset
-                + "&order[createdAt]=desc&includes[]=cover_art&contentRating[]=safe&contentRating[]=suggestive&contentRating[]=erotica&contentRating[]=pornographic";
+                + "&order[createdAt]=desc&includes[]=cover_art&includes[]=author&contentRating[]=safe&contentRating[]=suggestive&contentRating[]=erotica&contentRating[]=pornographic";
     }
 
     {
@@ -168,7 +168,8 @@ public class MangaDex {
 
   @GetMapping("/manga-by-id")
   public String fetchMangaById(@RequestParam(value = "id", required = true) String id) {
-    String externalApiUrl = "https://api.mangadex.org/manga/" + id + "?includes[]=cover_art";
+    String externalApiUrl =
+        "https://api.mangadex.org/manga/" + id + "?includes[]=cover_art&includes[]=author";
     // Create HttpHeaders and set the User-Agent header
     HttpHeaders headers = new HttpHeaders();
     headers.add("User-Agent", "ink-paradise");
@@ -194,7 +195,7 @@ public class MangaDex {
           externalApiUrl =
               "https://api.mangadex.org/manga/?limit="
                   + limit
-                  + "&includes[]=cover_art"
+                  + "&includes[]=cover_art&includes[]=author"
                   + "&title="
                   + title.replaceAll(" ", "+")
                   + "&order[rating]=desc&contentRating[]=safe";
@@ -205,7 +206,7 @@ public class MangaDex {
           externalApiUrl =
               "https://api.mangadex.org/manga/?limit="
                   + limit
-                  + "&includes[]=cover_art"
+                  + "&includes[]=cover_art&includes[]=author"
                   + "&title="
                   + title.replaceAll(" ", "+")
                   + "&order[rating]=desc&contentRating[]=safe&contentRating[]=suggestive";
@@ -216,7 +217,7 @@ public class MangaDex {
           externalApiUrl =
               "https://api.mangadex.org/manga/?limit="
                   + limit
-                  + "&includes[]=cover_art"
+                  + "&includes[]=cover_art&includes[]=author"
                   + "&title="
                   + title.replaceAll(" ", "+")
                   + "&order[rating]=desc&contentRating[]=safe&contentRating[]=suggestive&contentRating[]=erotica";
@@ -227,7 +228,7 @@ public class MangaDex {
           externalApiUrl =
               "https://api.mangadex.org/manga/?limit="
                   + limit
-                  + "&includes[]=cover_art"
+                  + "&includes[]=cover_art&includes[]=author"
                   + "&title="
                   + title.replaceAll(" ", "+")
                   + "&order[rating]=desc&contentRating[]=safe&contentRating[]=suggestive&contentRating[]=erotica&contentRating[]=pornographic";
@@ -265,7 +266,7 @@ public class MangaDex {
           .append(URLEncoder.encode(limit.toString(), StandardCharsets.UTF_8.toString()));
 
       externalApiUrl
-          .append("&includedTags[]=")
+          .append("&includes[]=author&includedTags[]=")
           .append(URLEncoder.encode(id, StandardCharsets.UTF_8.toString()));
       int contentFilterValue = contentFilter.intValue();
       switch (contentFilterValue) {
@@ -378,25 +379,25 @@ public class MangaDex {
         case 1:
           {
             externalApiUrl.append(
-                "&includedTagsMode=AND&order[rating]=desc&includes[]=cover_art&contentRating[]=safe");
+                "&includedTagsMode=AND&order[rating]=desc&includes[]=cover_art&includes[]=author&contentRating[]=safe");
             break;
           }
         case 2:
           {
             externalApiUrl.append(
-                "&includedTagsMode=AND&order[rating]=desc&includes[]=cover_art&contentRating[]=safe&contentRating[]=suggestive");
+                "&includedTagsMode=AND&order[rating]=desc&includes[]=cover_art&includes[]=author&contentRating[]=safe&contentRating[]=suggestive");
             break;
           }
         case 3:
           {
             externalApiUrl.append(
-                "&includedTagsMode=AND&order[rating]=desc&includes[]=cover_art&contentRating[]=safe&contentRating[]=suggestive&contentRating[]=erotica");
+                "&includedTagsMode=AND&order[rating]=desc&includes[]=cover_art&includes[]=author&contentRating[]=safe&contentRating[]=suggestive&contentRating[]=erotica");
             break;
           }
         case 4:
           {
             externalApiUrl.append(
-                "&includedTagsMode=AND&order[rating]=desc&includes[]=cover_art&contentRating[]=safe&contentRating[]=suggestive&contentRating[]=erotica&contentRating[]=pornographic");
+                "&includedTagsMode=AND&order[rating]=desc&includes[]=cover_art&includes[]=author&contentRating[]=safe&contentRating[]=suggestive&contentRating[]=erotica&contentRating[]=pornographic");
             break;
           }
       }
@@ -433,7 +434,7 @@ public class MangaDex {
           externalApiUrl =
               "https://api.mangadex.org/manga?limit="
                   + limit
-                  + "&includes[]=cover_art"
+                  + "&includes[]=cover_art&includes[]=author"
                   + "&order[rating]=desc&contentRating[]=safe";
         }
       case 2:
@@ -441,7 +442,7 @@ public class MangaDex {
           externalApiUrl =
               "https://api.mangadex.org/manga?limit="
                   + limit
-                  + "&includes[]=cover_art"
+                  + "&includes[]=cover_art&includes[]=author"
                   + "&order[rating]=desc&contentRating[]=safe&contentRating[]=suggestive";
         }
       case 3:
@@ -449,7 +450,7 @@ public class MangaDex {
           externalApiUrl =
               "https://api.mangadex.org/manga?limit="
                   + limit
-                  + "&includes[]=cover_art"
+                  + "&includes[]=cover_art&includes[]=author"
                   + "&order[rating]=desc&contentRating[]=safe&contentRating[]=suggestive&contentRating[]=erotica";
         }
       case 4:
@@ -457,7 +458,7 @@ public class MangaDex {
           externalApiUrl =
               "https://api.mangadex.org/manga?limit="
                   + limit
-                  + "&includes[]=cover_art"
+                  + "&includes[]=cover_art&includes[]=author"
                   + "&order[rating]=desc&contentRating[]=safe&contentRating[]=suggestive&contentRating[]=erotica&contentRating[]=pornographic";
         }
     }
@@ -511,7 +512,7 @@ public class MangaDex {
                   + offset
                   + "&authors[]="
                   + id
-                  + "&order[relevance]=desc&contentRating[]=safe";
+                  + "&order[relevance]=desc&contentRating[]=safe&includes[]=author";
         }
       case 2:
         {
@@ -522,7 +523,7 @@ public class MangaDex {
                   + offset
                   + "&authors[]="
                   + id
-                  + "&order[relevance]=desc&contentRating[]=safe&contentRating[]=suggestive";
+                  + "&order[relevance]=desc&contentRating[]=safe&contentRating[]=suggestive&includes[]=author";
         }
       case 3:
         {
@@ -533,7 +534,7 @@ public class MangaDex {
                   + offset
                   + "&authors[]="
                   + id
-                  + "&order[relevance]=desc&contentRating[]=safe&contentRating[]=suggestive&contentRating[]=erotica";
+                  + "&order[relevance]=desc&contentRating[]=safe&contentRating[]=suggestive&contentRating[]=erotica&includes[]=author";
         }
       case 4:
         {
@@ -544,7 +545,7 @@ public class MangaDex {
                   + offset
                   + "&authors[]="
                   + id
-                  + "&order[relevance]=desc&contentRating[]=safe&contentRating[]=suggestive&contentRating[]=erotica&contentRating[]=pornographic";
+                  + "&order[relevance]=desc&contentRating[]=safe&contentRating[]=suggestive&contentRating[]=erotica&contentRating[]=pornographic&includes[]=author";
         }
     }
 

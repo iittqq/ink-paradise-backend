@@ -1,11 +1,14 @@
 package cats_are_dope.ink_paradise_backend.Controllers;
 
 import cats_are_dope.ink_paradise_backend.Models.Account;
+import cats_are_dope.ink_paradise_backend.Models.JwtResponse;
 import cats_are_dope.ink_paradise_backend.Models.LoginRequest;
 import cats_are_dope.ink_paradise_backend.Models.UpdatePasswordRequest;
 import cats_are_dope.ink_paradise_backend.Models.UpdateUsernameRequest;
 import cats_are_dope.ink_paradise_backend.Repositories.AccountRepository;
 import cats_are_dope.ink_paradise_backend.Services.AccountService;
+import cats_are_dope.ink_paradise_backend.Services.JwtService;
+import cats_are_dope.ink_paradise_backend.Services.RefreshTokenService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
@@ -14,6 +17,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -46,7 +50,8 @@ public class AccountController {
         accountRepository
             .findById(accountId)
             .orElseThrow(() -> new Exception("Account not found for this id :: " + accountId));
-    return ResponseEntity.ok().body(account);
+
+    return ResponseEntity.ok(account);
   }
 
   @Autowired private AccountService accountService;
@@ -82,16 +87,57 @@ public class AccountController {
     }
   }
 
+  @Autowired private JwtService jwtService;
+
+  @Autowired private RefreshTokenService refreshTokenService;
+
+  @PostMapping("/accounts/refresh")
+  public ResponseEntity<Map<String, String>> refresh(@RequestBody Map<String, String> request) {
+    String refreshToken = request.get("refreshToken");
+
+    try {
+      // Check if the refresh token exists in the database and is valid
+      if (!refreshTokenService.validateRefreshToken(refreshToken)) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+      }
+
+      // Validate expiration of the refresh token
+      if (jwtService.isRefreshTokenExpired(refreshToken)) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+      }
+
+      // Retrieve the account ID from the refresh token and generate a new access token
+      String accountId = jwtService.getClaimsFromToken(refreshToken).getSubject();
+      String newAccessToken = jwtService.generateAccessToken(Long.parseLong(accountId));
+
+      Map<String, String> tokens = new HashMap<>();
+      tokens.put("accessToken", newAccessToken);
+
+      return ResponseEntity.ok(tokens);
+    } catch (Exception e) {
+      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+    }
+  }
+
+  // Login Endpoint
   @PostMapping("/accounts/login")
-  public long login(@RequestBody LoginRequest loginRequest) {
+  public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
     String email = loginRequest.getEmail();
     String password = loginRequest.getPassword();
 
     Account account = accountService.findAccountByEmail(email);
     if (account != null && passwordEncoder.matches(password, account.getPassword())) {
-      return account.getId();
+      // Generate JWT access token and refresh token
+      String accessToken = jwtService.generateAccessToken(account.getId());
+      String refreshToken = jwtService.generateRefreshToken(account.getId());
+
+      // Store refresh token in the database associated with this account
+      refreshTokenService.createOrUpdateRefreshToken(account.getId(), refreshToken);
+
+      // Return both tokens
+      return ResponseEntity.ok(new JwtResponse(accessToken, refreshToken));
     } else {
-      return -1;
+      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
     }
   }
 
