@@ -6,7 +6,9 @@ import jakarta.validation.Valid;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -39,6 +41,23 @@ public class ReadingController {
       throw new IllegalArgumentException("Reading id cannot be null");
     }
     return readingRepository.findByUserId(userId);
+  }
+
+  @PostMapping("/reading/update_or_create")
+  public ResponseEntity<String> updateOrCreateReading(@RequestBody Reading reading) {
+    Optional<Reading> existingReading =
+        readingRepository.findByUserIdAndMangaId(reading.getUserId(), reading.getMangaId());
+
+    if (existingReading.isPresent()) {
+      Reading existing = existingReading.get();
+      existing.setChapter(reading.getChapter());
+      existing.setTimestamp(reading.getTimestamp());
+      readingRepository.save(existing);
+      return ResponseEntity.status(HttpStatus.OK).body("Reading updated successfully");
+    } else {
+      readingRepository.save(reading);
+      return ResponseEntity.status(HttpStatus.CREATED).body("Reading created successfully");
+    }
   }
 
   @GetMapping("/reading/find_by_user_id_and_manga_name/{userId}/{mangaName}")

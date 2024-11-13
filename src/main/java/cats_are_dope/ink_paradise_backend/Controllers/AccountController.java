@@ -59,9 +59,8 @@ public class AccountController {
   @Autowired private PasswordEncoder passwordEncoder;
 
   @PostMapping("/accounts/new")
-  public Account createAccount(@Valid @RequestBody Account account, HttpServletRequest request)
-      throws IOException {
-    System.out.println("url: " + getSiteURL(request));
+  public ResponseEntity<Map<String, Long>> createAccount(
+      @Valid @RequestBody Account account, HttpServletRequest request) throws IOException {
 
     if (account.getEmail() == null || account.getPassword() == null) {
       throw new IllegalArgumentException("Account email, password, and username cannot be null");
@@ -69,7 +68,11 @@ public class AccountController {
     account.setPassword(passwordEncoder.encode(account.getPassword()));
 
     accountService.registerAccount(account, getSiteURL(request));
-    return accountRepository.save(account);
+    accountRepository.save(account);
+
+    Map<String, Long> response = new HashMap<>();
+    response.put("id", account.getId());
+    return ResponseEntity.status(HttpStatus.CREATED).body(response);
   }
 
   private String getSiteURL(HttpServletRequest request) {
@@ -80,7 +83,6 @@ public class AccountController {
   @GetMapping("/accounts/verify")
   public void verifyAccount(
       @RequestParam("code") String code, HttpServletResponse httpServletResponse) {
-    System.out.println("Code: " + code);
     if (accountService.verify(code)) {
       httpServletResponse.setHeader("Location", "https://ink-paradise.com/");
       httpServletResponse.setStatus(302);

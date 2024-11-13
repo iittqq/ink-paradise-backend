@@ -6,6 +6,7 @@ import jakarta.validation.Valid;
 import java.util.HashMap;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -32,7 +33,8 @@ public class AccountDetailsController {
   }
 
   @PostMapping("/account-details/create-details/new")
-  public AccountDetails createAccountDetails(@Valid @RequestBody AccountDetails accountDetails) {
+  public ResponseEntity<String> createAccountDetails(
+      @Valid @RequestBody AccountDetails accountDetails) {
 
     if (accountDetails.getAccountId() == 0
         || accountDetails.getBio() == null
@@ -40,9 +42,9 @@ public class AccountDetailsController {
       throw new IllegalArgumentException("Account details missing:" + accountDetails);
     }
 
-    System.out.println("Account Details: ");
-    System.out.println(accountDetails);
-    return accountDetailsRepository.save(accountDetails);
+    accountDetailsRepository.save(accountDetails);
+
+    return ResponseEntity.status(HttpStatus.CREATED).body("Account Details successfully created");
   }
 
   @PutMapping("/account-details/update-details/{id}")
