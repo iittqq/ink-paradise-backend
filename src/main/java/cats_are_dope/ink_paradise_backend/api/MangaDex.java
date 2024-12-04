@@ -1,9 +1,15 @@
 package cats_are_dope.ink_paradise_backend.api;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -180,6 +186,150 @@ public class MangaDex {
 
     // Make the request
     return restTemplate.exchange(requestEntity, String.class).getBody();
+  }
+
+  @GetMapping("/manga-list-by-id")
+  public String fetchMangaListById(@RequestParam(value = "ids", required = true) List<String> ids) {
+
+    // Construct the query string with the given IDs
+    String idsQuery =
+        ids.stream()
+            .map(
+                id -> {
+                  try {
+                    return "ids[]=" + URLEncoder.encode(id, "UTF-8");
+                  } catch (UnsupportedEncodingException e) {
+                    throw new RuntimeException("Encoding error", e);
+                  }
+                })
+            .collect(Collectors.joining("&"));
+
+    // Construct the full API URL with additional parameters
+    String externalApiUrl =
+        "https://api.mangadex.org/manga?"
+            + idsQuery
+            + "&limit=100"
+            + "&contentRating[]=safe"
+            + "&contentRating[]=suggestive"
+            + "&contentRating[]=erotica"
+            + "&contentRating[]=pornographic"
+            + "&includes[]=cover_art&includes[]=author";
+
+    // Create HttpHeaders and set the User-Agent header
+    HttpHeaders headers = new HttpHeaders();
+    headers.add("User-Agent", "ink-paradise");
+
+    // Create a RequestEntity with headers
+    RequestEntity<Object> requestEntity =
+        new RequestEntity<>(headers, HttpMethod.GET, URI.create(externalApiUrl));
+
+    // Make the request
+    return restTemplate.exchange(requestEntity, String.class).getBody();
+  }
+
+  @GetMapping("/manga-search")
+  public String fetchMangaSearch(
+      @RequestParam(value = "mangaName", required = false) String mangaName,
+      @RequestParam(value = "authorName", required = false) String authorName,
+      @RequestParam(value = "scanlationGroup", required = false) String scanlationGroup,
+      @RequestParam(value = "offset", required = true) Number offset,
+      @RequestParam(value = "contentFilter", required = false) Number contentFilter) {
+    String externalApiUrl = "";
+    int contentFilterValue = contentFilter.intValue();
+    RestTemplate restTemplate = new RestTemplate();
+    ObjectMapper objectMapper = new ObjectMapper();
+
+    try {
+      String scanlationId = null;
+      String authorId = null;
+
+      if (scanlationGroup != null) {
+        String scanlationApiUrl =
+            "https://api.mangadex.org/group?limit=10&name=" + scanlationGroup.replaceAll(" ", "+");
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("User-Agent", "ink-paradise");
+
+        RequestEntity<Object> scanlationGroupData =
+            new RequestEntity<>(headers, HttpMethod.GET, URI.create(scanlationApiUrl));
+
+        ResponseEntity<String> scanlationResponse =
+            restTemplate.exchange(scanlationGroupData, String.class);
+
+        JsonNode scanlationJson = objectMapper.readTree(scanlationResponse.getBody());
+        JsonNode data = scanlationJson.get("data");
+        if (data != null && data.isArray() && data.size() > 0) {
+          scanlationId = data.get(0).get("id").asText();
+        }
+        System.out.println("Scanlation Group ID: " + scanlationId);
+      }
+
+      if (authorName != null) {
+        String authorApiUrl =
+            "https://api.mangadex.org/author?limit=10&name=" + authorName.replaceAll(" ", "+");
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("User-Agent", "ink-paradise");
+
+        RequestEntity<Object> authorNameData =
+            new RequestEntity<>(headers, HttpMethod.GET, URI.create(authorApiUrl));
+
+        ResponseEntity<String> authorResponse = restTemplate.exchange(authorNameData, String.class);
+
+        JsonNode authorJson = objectMapper.readTree(authorResponse.getBody());
+        JsonNode data = authorJson.get("data");
+        if (data != null && data.isArray() && data.size() > 0) {
+          authorId = data.get(0).get("id").asText();
+        }
+        System.out.println("First Author ID: " + authorId);
+      }
+
+      StringBuilder apiUrlBuilder = new StringBuilder("https://api.mangadex.org/manga?limit=100");
+      apiUrlBuilder.append("&offset=").append(offset);
+
+      if (scanlationId != null) {
+        apiUrlBuilder.append("&group=").append(scanlationId);
+      }
+
+      if (authorId != null) {
+        apiUrlBuilder.append("&authorOrArtist=").append(authorId);
+      }
+
+      switch (contentFilterValue) {
+        case 1 ->
+            apiUrlBuilder.append(
+                "&order[rating]=desc&contentRating[]=safe&includes[]=cover_art&includes[]=author&title="
+                    + mangaName.replaceAll(" ", "+"));
+        case 2 ->
+            apiUrlBuilder.append(
+                "&order[rating]=desc&contentRating[]=safe&contentRating[]=suggestive&includes[]=cover_art&includes[]=author&title="
+                    + mangaName.replaceAll(" ", "+"));
+        case 3 ->
+            apiUrlBuilder.append(
+                "&order[rating]=desc&contentRating[]=safe&contentRating[]=suggestive&contentRating[]=erotica&includes[]=cover_art&includes[]=author&title="
+                    + mangaName.replaceAll(" ", "+"));
+        case 4 ->
+            apiUrlBuilder.append(
+                "&order[rating]=desc&contentRating[]=safe&contentRating[]=suggestive&contentRating[]=erotica&contentRating[]=pornographic&includes[]=cover_art&includes[]=author&title="
+                    + mangaName.replaceAll(" ", "+"));
+        default ->
+            throw new IllegalArgumentException(
+                "Invalid content filter value: " + contentFilterValue);
+      }
+
+      externalApiUrl = apiUrlBuilder.toString();
+
+      HttpHeaders headers = new HttpHeaders();
+      headers.add("User-Agent", "ink-paradise");
+
+      RequestEntity<Object> requestEntity =
+          new RequestEntity<>(headers, HttpMethod.GET, URI.create(externalApiUrl));
+
+      return restTemplate.exchange(requestEntity, String.class).getBody();
+    } catch (Exception e) {
+      System.err.println("Error occurred: " + e.getMessage());
+      return "Error: " + e.getMessage();
+    }
   }
 
   @GetMapping("/manga-by-title")
@@ -462,20 +612,88 @@ public class MangaDex {
                   + "&order[rating]=desc&contentRating[]=safe&contentRating[]=suggestive&contentRating[]=erotica&contentRating[]=pornographic";
         }
     }
-    {
-      /**
-       * String externalApiUrl = "https://api.mangadex.org/manga?limit=" + limit +
-       * "&includes[]=cover_art" +
-       * "&order[rating]=desc&contentRating[]=safe&contentRating[]=suggestive&contentRating[]=erotica&contentRating[]=pornographic";
-       */
-    }
-    // Create HttpHeaders and set the User-Agent header
+
     HttpHeaders headers = new HttpHeaders();
+
     headers.add("User-Agent", "ink-paradise");
-    // Create a RequestEntity with headers
+
     RequestEntity<Object> requestEntity =
         new RequestEntity<>(headers, HttpMethod.GET, URI.create(externalApiUrl));
-    // Make the request
+
+    return restTemplate.exchange(requestEntity, String.class).getBody();
+  }
+
+  @GetMapping("/popular-new-manga")
+  public String fetchPopularNewManga(
+      @RequestParam(value = "limit", required = true) Number limit,
+      @RequestParam(value = "offset", required = true) Number offset,
+      @RequestParam(value = "contentFilter", required = false) Number contentFilter) {
+    String externalApiUrl = "";
+    int contentFilterValue = contentFilter.intValue();
+
+    LocalDateTime now = LocalDateTime.now();
+
+    // Subtract one month
+    LocalDateTime oneMonthAgo = now.minusMonths(1);
+
+    // Format the date and time
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
+    String formattedDate = oneMonthAgo.format(formatter);
+
+    switch (contentFilterValue) {
+      case 1:
+        {
+          externalApiUrl =
+              "https://api.mangadex.org/manga?limit="
+                  + limit
+                  + "&offset="
+                  + offset
+                  + "&includes[]=cover_art&includes[]=author"
+                  + "&order[followedCount]=desc&contentRating[]=safe&hasAvailableChapters=true&createdAtSince="
+                  + formattedDate;
+        }
+      case 2:
+        {
+          externalApiUrl =
+              "https://api.mangadex.org/manga?limit="
+                  + limit
+                  + "&offset="
+                  + offset
+                  + "&includes[]=cover_art&includes[]=author"
+                  + "&order[followedCount]=desc&contentRating[]=safe&contentRating[]=suggestive&hasAvailableChapters=true&createdAtSince="
+                  + formattedDate;
+        }
+      case 3:
+        {
+          externalApiUrl =
+              "https://api.mangadex.org/manga?limit="
+                  + limit
+                  + "&offset="
+                  + offset
+                  + "&includes[]=cover_art&includes[]=author"
+                  + "&order[followedCount]=desc&contentRating[]=safe&contentRating[]=suggestive&contentRating[]=erotica&hasAvailableChapters=true&createdAtSince="
+                  + formattedDate;
+        }
+      case 4:
+        {
+          externalApiUrl =
+              "https://api.mangadex.org/manga?limit="
+                  + limit
+                  + "&offset="
+                  + offset
+                  + "&includes[]=cover_art&includes[]=author"
+                  + "&order[followedCount]=desc&contentRating[]=safe&contentRating[]=suggestive&contentRating[]=erotica&contentRating[]=pornographic&hasAvailableChapters=true&createdAtSince="
+                  + formattedDate;
+        }
+    }
+
+    HttpHeaders headers = new HttpHeaders();
+
+    headers.add("User-Agent", "ink-paradise");
+
+    RequestEntity<Object> requestEntity =
+        new RequestEntity<>(headers, HttpMethod.GET, URI.create(externalApiUrl));
+
     return restTemplate.exchange(requestEntity, String.class).getBody();
   }
 

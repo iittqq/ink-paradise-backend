@@ -65,6 +65,12 @@ public class AccountController {
     if (account.getEmail() == null || account.getPassword() == null) {
       throw new IllegalArgumentException("Account email, password, and username cannot be null");
     }
+
+    Account existingAccount = accountRepository.findByEmail(account.getEmail());
+    if (existingAccount != null) {
+      throw new IllegalArgumentException("An account with this email already exists");
+    }
+
     account.setPassword(passwordEncoder.encode(account.getPassword()));
 
     accountService.registerAccount(account, getSiteURL(request));

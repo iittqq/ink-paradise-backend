@@ -23,7 +23,7 @@ public class Reading {
   @Column(name = "chapter", nullable = false, precision = 15, scale = 2)
   private BigDecimal chapter;
 
-  @Column(name = "mangaName", nullable = false, length = 100)
+  @Column(name = "mangaName", nullable = false)
   private String mangaName;
 
   @Column(name = "timestamp", nullable = false, length = 50)

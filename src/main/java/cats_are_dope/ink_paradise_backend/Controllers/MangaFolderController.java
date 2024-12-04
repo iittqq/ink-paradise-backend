@@ -60,9 +60,9 @@ public class MangaFolderController {
         mangaFolderRepository
             .findById(folderId)
             .orElseThrow(() -> new Exception("Manga folder not found for this id :: " + folderId));
-    mangaFolder.setUserId(mangaFolderDetails.getUserId());
     mangaFolder.setFolderName(mangaFolderDetails.getFolderName());
     mangaFolder.setFolderDescription(mangaFolderDetails.getFolderDescription());
+    mangaFolder.setFolderCover(mangaFolderDetails.getFolderCover());
 
     final MangaFolder updatedMangaFolder = mangaFolderRepository.save(mangaFolder);
     return ResponseEntity.ok(updatedMangaFolder);

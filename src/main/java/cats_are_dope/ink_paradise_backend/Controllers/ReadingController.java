@@ -70,6 +70,22 @@ public class ReadingController {
     return readingRepository.findByUserIdAndMangaNameContaining(userId, mangaName);
   }
 
+  @GetMapping("/reading/find_by_user_id_and_manga_id/{userId}/{mangaId}")
+  public ResponseEntity<Reading> getReadingByUserIdAndMangaId(
+      @PathVariable(value = "userId") Long userId,
+      @PathVariable(value = "mangaId") String mangaId) {
+    if (userId == null || mangaId == null) {
+      throw new IllegalArgumentException("Reading id and manga id cannot be null");
+    }
+    List<Reading> readings = readingRepository.findByUserIdAndMangaIdContaining(userId, mangaId);
+
+    if (readings.isEmpty()) {
+      return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+    }
+
+    return ResponseEntity.ok(readings.get(0));
+  }
+
   @PostMapping("/reading/new")
   public Reading createReading(@Valid @RequestBody Reading reading) {
     if (reading.getMangaId() == null) {

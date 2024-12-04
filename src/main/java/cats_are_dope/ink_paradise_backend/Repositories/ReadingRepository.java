@@ -12,6 +12,8 @@ public interface ReadingRepository extends JpaRepository<Reading, Long>, Reading
 
   List<Reading> findByUserIdAndMangaNameContaining(Long userId, String mangaName);
 
+  List<Reading> findByUserIdAndMangaIdContaining(Long userId, String mangaId);
+
   void deleteByMangaIdAndUserId(String mangaId, Long userId);
 
   Optional<Reading> findByUserIdAndMangaId(Long userId, String mangaId);

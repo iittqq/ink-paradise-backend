@@ -89,6 +89,7 @@ public class BookmarksController {
         existing.setChapterNumber(bookmark.getChapterNumber());
         existing.setChapterIndex(bookmark.getChapterIndex());
         existing.setPageNumber(bookmark.getPageNumber());
+        existing.setChapterId(bookmark.getChapterId());
         bookmarksRepository.save(existing);
         return ResponseEntity.status(HttpStatus.OK)
             .body("Continue reading bookmark updated successfully");
