@@ -2,10 +2,8 @@ package cats_are_dope.ink_paradise_backend.Models;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
 
 @AllArgsConstructor
-@NoArgsConstructor
 @Entity
 @Table(name = "userAccount", schema = "ink_paradise")
 public class Account {
@@ -32,6 +30,8 @@ public class Account {
     this.email = email;
     this.password = password;
   }
+
+  public Account() {}
 
   public long getId() {
     return id;

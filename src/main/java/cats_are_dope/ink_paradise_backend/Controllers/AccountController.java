@@ -33,7 +33,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/v1")
 public class AccountController {
-  @Autowired private AccountRepository accountRepository;
+  @Autowired
+  private AccountRepository accountRepository;
 
   @GetMapping("/accounts")
   public List<Account> getAllAccounts() {
@@ -46,17 +47,18 @@ public class AccountController {
     if (accountId == null) {
       throw new IllegalArgumentException("Account id cannot be null");
     }
-    Account account =
-        accountRepository
-            .findById(accountId)
-            .orElseThrow(() -> new Exception("Account not found for this id :: " + accountId));
+    Account account = accountRepository
+        .findById(accountId)
+        .orElseThrow(() -> new Exception("Account not found for this id :: " + accountId));
 
     return ResponseEntity.ok(account);
   }
 
-  @Autowired private AccountService accountService;
+  @Autowired
+  private AccountService accountService;
 
-  @Autowired private PasswordEncoder passwordEncoder;
+  @Autowired
+  private PasswordEncoder passwordEncoder;
 
   @PostMapping("/accounts/new")
   public ResponseEntity<Map<String, Long>> createAccount(
@@ -95,9 +97,11 @@ public class AccountController {
     }
   }
 
-  @Autowired private JwtService jwtService;
+  @Autowired
+  private JwtService jwtService;
 
-  @Autowired private RefreshTokenService refreshTokenService;
+  @Autowired
+  private RefreshTokenService refreshTokenService;
 
   @PostMapping("/accounts/refresh")
   public ResponseEntity<Map<String, String>> refresh(@RequestBody Map<String, String> request) {
@@ -114,7 +118,8 @@ public class AccountController {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
       }
 
-      // Retrieve the account ID from the refresh token and generate a new access token
+      // Retrieve the account ID from the refresh token and generate a new access
+      // token
       String accountId = jwtService.getClaimsFromToken(refreshToken).getSubject();
       String newAccessToken = jwtService.generateAccessToken(Long.parseLong(accountId));
 
@@ -161,10 +166,9 @@ public class AccountController {
     if (accountId == null) {
       throw new IllegalArgumentException("Account id cannot be null");
     }
-    Account account =
-        accountRepository
-            .findById(accountId)
-            .orElseThrow(() -> new Exception("Account not found for this id :: " + accountId));
+    Account account = accountRepository
+        .findById(accountId)
+        .orElseThrow(() -> new Exception("Account not found for this id :: " + accountId));
 
     account.setEmail(accountDetails.getEmail());
     account.setPassword(passwordEncoder.encode(accountDetails.getPassword()));
@@ -179,11 +183,10 @@ public class AccountController {
     if (accountDetails.getId() == 0 || accountDetails.getUsername() == null) {
       throw new IllegalArgumentException("Account id cannot be null");
     }
-    Account account =
-        accountRepository
-            .findById(accountDetails.getId())
-            .orElseThrow(
-                () -> new Exception("Account not found for this id :: " + accountDetails.getId()));
+    Account account = accountRepository
+        .findById(accountDetails.getId())
+        .orElseThrow(
+            () -> new Exception("Account not found for this id :: " + accountDetails.getId()));
     account.setUsername(accountDetails.getUsername());
     final Account updatedAccount = accountRepository.save(account);
     return ResponseEntity.ok(updatedAccount);
@@ -197,11 +200,10 @@ public class AccountController {
         || accountDetails.getNewPassword() == null) {
       throw new IllegalArgumentException("Account details cannot be null");
     }
-    Account account =
-        accountRepository
-            .findById(accountDetails.getId())
-            .orElseThrow(
-                () -> new Exception("Account not found for this id :: " + accountDetails.getId()));
+    Account account = accountRepository
+        .findById(accountDetails.getId())
+        .orElseThrow(
+            () -> new Exception("Account not found for this id :: " + accountDetails.getId()));
     if (passwordEncoder.matches(accountDetails.getOldPassword(), account.getPassword())) {
       account.setPassword(passwordEncoder.encode(accountDetails.getNewPassword()));
 
@@ -218,10 +220,9 @@ public class AccountController {
     if (accountId == null) {
       throw new IllegalArgumentException("Account id cannot be null");
     }
-    Account account =
-        accountRepository
-            .findById(accountId)
-            .orElseThrow(() -> new Exception("Account not found for this id :: " + accountId));
+    Account account = accountRepository
+        .findById(accountId)
+        .orElseThrow(() -> new Exception("Account not found for this id :: " + accountId));
 
     if (account == null) {
       throw new IllegalArgumentException("Account cannot be null");

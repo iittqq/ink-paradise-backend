@@ -21,7 +21,9 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v1")
 public class AccountDetailsController {
 
-  @Autowired private AccountDetailsRepository accountDetailsRepository;
+  @Autowired
+  
+  private AccountDetailsRepository accountDetailsRepository;
 
   @GetMapping("/account-details/find-by-accountId/{accountId}")
   public ResponseEntity<AccountDetails> getAccountDetailsByAccountId(

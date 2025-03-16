@@ -1,5 +1,6 @@
 package cats_are_dope.ink_paradise_backend.api;
 
+import cats_are_dope.ink_paradise_backend.Services.MangaDexRateLimiterService;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.UnsupportedEncodingException;
@@ -9,6 +10,8 @@ import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -28,11 +31,19 @@ import org.springframework.web.client.RestTemplate;
 public class MangaDex {
   @Autowired private RestTemplate restTemplate = new RestTemplate();
 
+  @Autowired private MangaDexRateLimiterService mangaDexRateLimiterService;
+
+  public MangaDex(MangaDexRateLimiterService mangaDexRateLimiterService) {
+    this.mangaDexRateLimiterService = mangaDexRateLimiterService;
+    this.restTemplate = new RestTemplate();
+  }
+
   @GetMapping("/recently-updated")
   public String fetchRecentlyUpdated(
       @RequestParam(value = "limit", required = true) Number limit,
       @RequestParam(value = "offset", required = false) Number offset,
       @RequestParam(value = "contentFilter", required = false) Number contentFilter) {
+
     String externalApiUrl = "";
     int contentFilterValue = contentFilter.intValue();
     switch (contentFilterValue) {
@@ -77,13 +88,7 @@ public class MangaDex {
           break;
         }
     }
-    {
-      /**
-       * String externalApiUrl = "https://api.mangadex.org/manga?limit=" + limit + "&offset=" +
-       * offset +
-       * "&order[latestUploadedChapter]=desc&includes[]=cover_art&contentRating[]=safe&contentRating[]=suggestive&contentRating[]=erotica&contentRating[]=pornographic";
-       */
-    }
+
     // Create HttpHeaders and set the User-Agent header
     HttpHeaders headers = new HttpHeaders();
     headers.add("User-Agent", "ink-paradise");
@@ -92,8 +97,25 @@ public class MangaDex {
     RequestEntity<Object> requestEntity =
         new RequestEntity<>(headers, HttpMethod.GET, URI.create(externalApiUrl));
 
-    // Make the request
-    return restTemplate.exchange(requestEntity, String.class).getBody();
+    CompletableFuture<String> futureResponse = new CompletableFuture<>();
+
+    // Submit request to rate-limited queue
+    mangaDexRateLimiterService.processRequest(
+        () -> {
+          try {
+            String response = restTemplate.exchange(requestEntity, String.class).getBody();
+            futureResponse.complete(response); // Complete the future with the response
+          } catch (Exception e) {
+            futureResponse.completeExceptionally(e); // Handle exceptions properly
+          }
+        });
+
+    try {
+      // Block and wait for the response from the queued task
+      return futureResponse.get();
+    } catch (InterruptedException | ExecutionException e) {
+      return "Error processing request.";
+    } // return restTemplate.exchange(requestEntity, String.class).getBody();
   }
 
   @GetMapping("/recently-added")
@@ -101,6 +123,7 @@ public class MangaDex {
       @RequestParam(value = "limit", required = true) Number limit,
       @RequestParam(value = "offset", required = false) Number offset,
       @RequestParam(value = "contentFilter", required = false) Number contentFilter) {
+
     String externalApiUrl = "";
     int contentFilterValue = contentFilter.intValue();
     switch (contentFilterValue) {
@@ -137,14 +160,6 @@ public class MangaDex {
                 + "&order[createdAt]=desc&includes[]=cover_art&includes[]=author&contentRating[]=safe&contentRating[]=suggestive&contentRating[]=erotica&contentRating[]=pornographic";
     }
 
-    {
-      /**
-       * String externalApiUrl = "https://api.mangadex.org/manga?limit=" + limit + "&offset=" +
-       * offset +
-       * "&order[createdAt]=desc&includes[]=cover_art&contentRating[]=safe&contentRating[]=suggestive&contentRating[]=erotica&contentRating[]=pornographic";
-       */
-    }
-
     // Create HttpHeaders and set the User-Agent header
     HttpHeaders headers = new HttpHeaders();
     headers.add("User-Agent", "ink-paradise");
@@ -152,13 +167,32 @@ public class MangaDex {
     // Create a RequestEntity with headers
     RequestEntity<Object> requestEntity =
         new RequestEntity<>(headers, HttpMethod.GET, URI.create(externalApiUrl));
+    CompletableFuture<String> futureResponse = new CompletableFuture<>();
 
+    // Submit request to rate-limited queue
+    mangaDexRateLimiterService.processRequest(
+        () -> {
+          try {
+            String response = restTemplate.exchange(requestEntity, String.class).getBody();
+            futureResponse.complete(response); // Complete the future with the response
+          } catch (Exception e) {
+            futureResponse.completeExceptionally(e); // Handle exceptions properly
+          }
+        });
+
+    try {
+      // Block and wait for the response from the queued task
+      return futureResponse.get();
+    } catch (InterruptedException | ExecutionException e) {
+      return "Error processing request.";
+    }
     // Make the request
-    return restTemplate.exchange(requestEntity, String.class).getBody();
+    // return restTemplate.exchange(requestEntity, String.class).getBody();
   }
 
   @GetMapping("/tags")
   public String fetchTags() {
+
     String externalApiUrl = "https://api.mangadex.org/manga/tag";
     // Create HttpHeaders and set the User-Agent header
     HttpHeaders headers = new HttpHeaders();
@@ -167,13 +201,32 @@ public class MangaDex {
     // Create a RequestEntity with headers
     RequestEntity<Object> requestEntity =
         new RequestEntity<>(headers, HttpMethod.GET, URI.create(externalApiUrl));
+    CompletableFuture<String> futureResponse = new CompletableFuture<>();
 
+    // Submit request to rate-limited queue
+    mangaDexRateLimiterService.processRequest(
+        () -> {
+          try {
+            String response = restTemplate.exchange(requestEntity, String.class).getBody();
+            futureResponse.complete(response); // Complete the future with the response
+          } catch (Exception e) {
+            futureResponse.completeExceptionally(e); // Handle exceptions properly
+          }
+        });
+
+    try {
+      // Block and wait for the response from the queued task
+      return futureResponse.get();
+    } catch (InterruptedException | ExecutionException e) {
+      return "Error processing request.";
+    }
     // Make the request
-    return restTemplate.exchange(requestEntity, String.class).getBody();
+    // return restTemplate.exchange(requestEntity, String.class).getBody();
   }
 
   @GetMapping("/manga-by-id")
   public String fetchMangaById(@RequestParam(value = "id", required = true) String id) {
+
     String externalApiUrl =
         "https://api.mangadex.org/manga/" + id + "?includes[]=cover_art&includes[]=author";
     // Create HttpHeaders and set the User-Agent header
@@ -183,9 +236,27 @@ public class MangaDex {
     // Create a RequestEntity with headers
     RequestEntity<Object> requestEntity =
         new RequestEntity<>(headers, HttpMethod.GET, URI.create(externalApiUrl));
+    CompletableFuture<String> futureResponse = new CompletableFuture<>();
 
+    // Submit request to rate-limited queue
+    mangaDexRateLimiterService.processRequest(
+        () -> {
+          try {
+            String response = restTemplate.exchange(requestEntity, String.class).getBody();
+            futureResponse.complete(response); // Complete the future with the response
+          } catch (Exception e) {
+            futureResponse.completeExceptionally(e); // Handle exceptions properly
+          }
+        });
+
+    try {
+      // Block and wait for the response from the queued task
+      return futureResponse.get();
+    } catch (InterruptedException | ExecutionException e) {
+      return "Error processing request.";
+    }
     // Make the request
-    return restTemplate.exchange(requestEntity, String.class).getBody();
+    // return restTemplate.exchange(requestEntity, String.class).getBody();
   }
 
   @GetMapping("/manga-list-by-id")
@@ -222,9 +293,27 @@ public class MangaDex {
     // Create a RequestEntity with headers
     RequestEntity<Object> requestEntity =
         new RequestEntity<>(headers, HttpMethod.GET, URI.create(externalApiUrl));
+    CompletableFuture<String> futureResponse = new CompletableFuture<>();
 
+    // Submit request to rate-limited queue
+    mangaDexRateLimiterService.processRequest(
+        () -> {
+          try {
+            String response = restTemplate.exchange(requestEntity, String.class).getBody();
+            futureResponse.complete(response); // Complete the future with the response
+          } catch (Exception e) {
+            futureResponse.completeExceptionally(e); // Handle exceptions properly
+          }
+        });
+
+    try {
+      // Block and wait for the response from the queued task
+      return futureResponse.get();
+    } catch (InterruptedException | ExecutionException e) {
+      return "Error processing request.";
+    }
     // Make the request
-    return restTemplate.exchange(requestEntity, String.class).getBody();
+    // return restTemplate.exchange(requestEntity, String.class).getBody();
   }
 
   @GetMapping("/manga-search")
@@ -234,6 +323,7 @@ public class MangaDex {
       @RequestParam(value = "scanlationGroup", required = false) String scanlationGroup,
       @RequestParam(value = "offset", required = true) Number offset,
       @RequestParam(value = "contentFilter", required = false) Number contentFilter) {
+
     String externalApiUrl = "";
     int contentFilterValue = contentFilter.intValue();
     RestTemplate restTemplate = new RestTemplate();
@@ -324,8 +414,26 @@ public class MangaDex {
 
       RequestEntity<Object> requestEntity =
           new RequestEntity<>(headers, HttpMethod.GET, URI.create(externalApiUrl));
+      CompletableFuture<String> futureResponse = new CompletableFuture<>();
 
-      return restTemplate.exchange(requestEntity, String.class).getBody();
+      // Submit request to rate-limited queue
+      mangaDexRateLimiterService.processRequest(
+          () -> {
+            try {
+              String response = restTemplate.exchange(requestEntity, String.class).getBody();
+              futureResponse.complete(response); // Complete the future with the response
+            } catch (Exception e) {
+              futureResponse.completeExceptionally(e); // Handle exceptions properly
+            }
+          });
+
+      try {
+        // Block and wait for the response from the queued task
+        return futureResponse.get();
+      } catch (InterruptedException | ExecutionException e) {
+        return "Error processing request.";
+      }
+      // return restTemplate.exchange(requestEntity, String.class).getBody();
     } catch (Exception e) {
       System.err.println("Error occurred: " + e.getMessage());
       return "Error: " + e.getMessage();
@@ -337,6 +445,7 @@ public class MangaDex {
       @RequestParam(value = "limit", required = true) Number limit,
       @RequestParam(value = "title", required = true) String title,
       @RequestParam(value = "contentFilter", required = false) Number contentFilter) {
+
     String externalApiUrl = "";
     int contentFilterValue = contentFilter.intValue();
     switch (contentFilterValue) {
@@ -385,13 +494,7 @@ public class MangaDex {
           break;
         }
     }
-    {
-      /**
-       * String externalApiUrl = "https://api.mangadex.org/manga/?limit=" + limit +
-       * "&includes[]=cover_art" + "&title=" + title.replaceAll(" ", "+") +
-       * "&order[rating]=desc&contentRating[]=safe&contentRating[]=suggestive&contentRating[]=erotica&contentRating[]=pornographic";
-       */
-    }
+
     // Create HttpHeaders and set the User-Agent header
     HttpHeaders headers = new HttpHeaders();
     headers.add("User-Agent", "ink-paradise");
@@ -399,9 +502,27 @@ public class MangaDex {
     // Create a RequestEntity with headers
     RequestEntity<Object> requestEntity =
         new RequestEntity<>(headers, HttpMethod.GET, URI.create(externalApiUrl));
+    CompletableFuture<String> futureResponse = new CompletableFuture<>();
 
+    // Submit request to rate-limited queue
+    mangaDexRateLimiterService.processRequest(
+        () -> {
+          try {
+            String response = restTemplate.exchange(requestEntity, String.class).getBody();
+            futureResponse.complete(response); // Complete the future with the response
+          } catch (Exception e) {
+            futureResponse.completeExceptionally(e); // Handle exceptions properly
+          }
+        });
+
+    try {
+      // Block and wait for the response from the queued task
+      return futureResponse.get();
+    } catch (InterruptedException | ExecutionException e) {
+      return "Error processing request.";
+    }
     // Make the request
-    return restTemplate.exchange(requestEntity, String.class).getBody();
+    // return restTemplate.exchange(requestEntity, String.class).getBody();
   }
 
   @GetMapping("/manga-by-tag")
@@ -409,6 +530,7 @@ public class MangaDex {
       @RequestParam(value = "limit", required = true) Number limit,
       @RequestParam(value = "id", required = true) String id,
       @RequestParam(value = "contentFilter", required = false) Number contentFilter) {
+
     try {
       StringBuilder externalApiUrl = new StringBuilder("https://api.mangadex.org/manga?");
       externalApiUrl
@@ -451,9 +573,27 @@ public class MangaDex {
       // Create a RequestEntity with headers
       RequestEntity<Object> requestEntity =
           new RequestEntity<>(headers, HttpMethod.GET, URI.create(externalApiUrl.toString()));
+      CompletableFuture<String> futureResponse = new CompletableFuture<>();
 
+      // Submit request to rate-limited queue
+      mangaDexRateLimiterService.processRequest(
+          () -> {
+            try {
+              String response = restTemplate.exchange(requestEntity, String.class).getBody();
+              futureResponse.complete(response); // Complete the future with the response
+            } catch (Exception e) {
+              futureResponse.completeExceptionally(e); // Handle exceptions properly
+            }
+          });
+
+      try {
+        // Block and wait for the response from the queued task
+        return futureResponse.get();
+      } catch (InterruptedException | ExecutionException e) {
+        return "Error processing request.";
+      }
       // Make the request
-      return restTemplate.exchange(requestEntity, String.class).getBody();
+      // return restTemplate.exchange(requestEntity, String.class).getBody();
     } catch (UnsupportedEncodingException e) {
       e.printStackTrace();
       return e.getMessage();
@@ -464,6 +604,7 @@ public class MangaDex {
 
   @GetMapping("/manga-cover")
   public String fetchMangaCover(@RequestParam(value = "id", required = true) String id) {
+
     String externalApiUrl = "https://api.mangadex.org/cover/" + id;
     // Create HttpHeaders and set the User-Agent header
     HttpHeaders headers = new HttpHeaders();
@@ -472,9 +613,27 @@ public class MangaDex {
     // Create a RequestEntity with headers
     RequestEntity<Object> requestEntity =
         new RequestEntity<>(headers, HttpMethod.GET, URI.create(externalApiUrl));
+    CompletableFuture<String> futureResponse = new CompletableFuture<>();
 
+    // Submit request to rate-limited queue
+    mangaDexRateLimiterService.processRequest(
+        () -> {
+          try {
+            String response = restTemplate.exchange(requestEntity, String.class).getBody();
+            futureResponse.complete(response); // Complete the future with the response
+          } catch (Exception e) {
+            futureResponse.completeExceptionally(e); // Handle exceptions properly
+          }
+        });
+
+    try {
+      // Block and wait for the response from the queued task
+      return futureResponse.get();
+    } catch (InterruptedException | ExecutionException e) {
+      return "Error processing request.";
+    }
     // Make the request
-    return restTemplate.exchange(requestEntity, String.class).getBody();
+    // return restTemplate.exchange(requestEntity, String.class).getBody();
   }
 
   @GetMapping("/manga-feed")
@@ -484,6 +643,7 @@ public class MangaDex {
       @RequestParam(value = "offset", required = true) Number offset,
       @RequestParam(value = "order", required = true) String order,
       @RequestParam(value = "translatedLanguage", required = true) String translatedLanguage) {
+
     String externalApiUrl =
         "https://api.mangadex.org/manga/"
             + id
@@ -497,16 +657,70 @@ public class MangaDex {
             + "&order[chapter]="
             + order
             + "&contentRating[]=safe&contentRating[]=suggestive&contentRating[]=erotica&contentRating[]=pornographic";
-    // Create HttpHeaders and set the User-Agent header
     HttpHeaders headers = new HttpHeaders();
     headers.add("User-Agent", "ink-paradise");
 
-    // Create a RequestEntity with headers
     RequestEntity<Object> requestEntity =
         new RequestEntity<>(headers, HttpMethod.GET, URI.create(externalApiUrl));
+    CompletableFuture<String> futureResponse = new CompletableFuture<>();
 
-    // Make the request
-    return restTemplate.exchange(requestEntity, String.class).getBody();
+    // Submit request to rate-limited queue
+    mangaDexRateLimiterService.processRequest(
+        () -> {
+          try {
+            String response = restTemplate.exchange(requestEntity, String.class).getBody();
+            futureResponse.complete(response); // Complete the future with the response
+          } catch (Exception e) {
+            futureResponse.completeExceptionally(e); // Handle exceptions properly
+          }
+        });
+
+    try {
+      // Block and wait for the response from the queued task
+      return futureResponse.get();
+    } catch (InterruptedException | ExecutionException e) {
+      return "Error processing request.";
+    }
+    // return restTemplate.exchange(requestEntity, String.class).getBody();
+  }
+
+  @GetMapping("/aggregate")
+  public String fetchAggregatedManga(
+      @RequestParam(value = "id", required = true) String id,
+      @RequestParam(value = "translatedLanguage", required = true) String translatedLanguage) {
+
+    String externalApiUrl =
+        "https://api.mangadex.org/manga/"
+            + id
+            + "/aggregate"
+            + "?translatedLanguage[]="
+            + translatedLanguage;
+
+    HttpHeaders headers = new HttpHeaders();
+    headers.add("User-Agent", "ink-paradise");
+
+    RequestEntity<Object> requestEntity =
+        new RequestEntity<>(headers, HttpMethod.GET, URI.create(externalApiUrl));
+    CompletableFuture<String> futureResponse = new CompletableFuture<>();
+
+    // Submit request to rate-limited queue
+    mangaDexRateLimiterService.processRequest(
+        () -> {
+          try {
+            String response = restTemplate.exchange(requestEntity, String.class).getBody();
+            futureResponse.complete(response); // Complete the future with the response
+          } catch (Exception e) {
+            futureResponse.completeExceptionally(e); // Handle exceptions properly
+          }
+        });
+
+    try {
+      // Block and wait for the response from the queued task
+      return futureResponse.get();
+    } catch (InterruptedException | ExecutionException e) {
+      return "Error processing request.";
+    }
+    // return restTemplate.exchange(requestEntity, String.class).getBody();
   }
 
   @GetMapping("/manga-similar")
@@ -515,6 +729,7 @@ public class MangaDex {
       @RequestParam(value = "offset", required = false) Number offset,
       @RequestParam(value = "tags", required = true) String[] tags,
       @RequestParam(value = "contentFilter", required = false) Number contentFilter) {
+
     try {
       StringBuilder externalApiUrl = new StringBuilder("https://api.mangadex.org/manga?");
       externalApiUrl
@@ -562,8 +777,26 @@ public class MangaDex {
       // Create a RequestEntity with headers
       RequestEntity<Object> requestEntity =
           new RequestEntity<>(headers, HttpMethod.GET, URI.create(externalApiUrl.toString()));
-      // Make the request
-      return restTemplate.exchange(requestEntity, String.class).getBody();
+      CompletableFuture<String> futureResponse = new CompletableFuture<>();
+
+      // Submit request to rate-limited queue
+      mangaDexRateLimiterService.processRequest(
+          () -> {
+            try {
+              String response = restTemplate.exchange(requestEntity, String.class).getBody();
+              futureResponse.complete(response); // Complete the future with the response
+            } catch (Exception e) {
+              futureResponse.completeExceptionally(e); // Handle exceptions properly
+            }
+          });
+
+      try {
+        // Block and wait for the response from the queued task
+        return futureResponse.get();
+      } catch (InterruptedException | ExecutionException e) {
+        return "Error processing request.";
+      } // Make the request
+      // return restTemplate.exchange(requestEntity, String.class).getBody();
     } catch (UnsupportedEncodingException e) {
       e.printStackTrace();
       return e.getMessage();
@@ -576,6 +809,7 @@ public class MangaDex {
   public String fetchPopularManga(
       @RequestParam(value = "limit", required = true) Number limit,
       @RequestParam(value = "contentFilter", required = false) Number contentFilter) {
+
     String externalApiUrl = "";
     int contentFilterValue = contentFilter.intValue();
     switch (contentFilterValue) {
@@ -619,8 +853,26 @@ public class MangaDex {
 
     RequestEntity<Object> requestEntity =
         new RequestEntity<>(headers, HttpMethod.GET, URI.create(externalApiUrl));
+    CompletableFuture<String> futureResponse = new CompletableFuture<>();
 
-    return restTemplate.exchange(requestEntity, String.class).getBody();
+    // Submit request to rate-limited queue
+    mangaDexRateLimiterService.processRequest(
+        () -> {
+          try {
+            String response = restTemplate.exchange(requestEntity, String.class).getBody();
+            futureResponse.complete(response); // Complete the future with the response
+          } catch (Exception e) {
+            futureResponse.completeExceptionally(e); // Handle exceptions properly
+          }
+        });
+
+    try {
+      // Block and wait for the response from the queued task
+      return futureResponse.get();
+    } catch (InterruptedException | ExecutionException e) {
+      return "Error processing request.";
+    }
+    // return restTemplate.exchange(requestEntity, String.class).getBody();
   }
 
   @GetMapping("/popular-new-manga")
@@ -628,6 +880,7 @@ public class MangaDex {
       @RequestParam(value = "limit", required = true) Number limit,
       @RequestParam(value = "offset", required = true) Number offset,
       @RequestParam(value = "contentFilter", required = false) Number contentFilter) {
+
     String externalApiUrl = "";
     int contentFilterValue = contentFilter.intValue();
 
@@ -693,12 +946,31 @@ public class MangaDex {
 
     RequestEntity<Object> requestEntity =
         new RequestEntity<>(headers, HttpMethod.GET, URI.create(externalApiUrl));
+    CompletableFuture<String> futureResponse = new CompletableFuture<>();
 
-    return restTemplate.exchange(requestEntity, String.class).getBody();
+    // Submit request to rate-limited queue
+    mangaDexRateLimiterService.processRequest(
+        () -> {
+          try {
+            String response = restTemplate.exchange(requestEntity, String.class).getBody();
+            futureResponse.complete(response); // Complete the future with the response
+          } catch (Exception e) {
+            futureResponse.completeExceptionally(e); // Handle exceptions properly
+          }
+        });
+
+    try {
+      // Block and wait for the response from the queued task
+      return futureResponse.get();
+    } catch (InterruptedException | ExecutionException e) {
+      return "Error processing request.";
+    }
+    // return restTemplate.exchange(requestEntity, String.class).getBody();
   }
 
   @GetMapping("/scanlation-group")
   public String fetchScantalationGroup(@RequestParam(value = "id", required = true) String id) {
+
     String externalApiUrl = "https://api.mangadex.org/group/" + id;
     // Create HttpHeaders and set the User-Agent header
     HttpHeaders headers = new HttpHeaders();
@@ -707,9 +979,27 @@ public class MangaDex {
     // Create a RequestEntity with headers
     RequestEntity<Object> requestEntity =
         new RequestEntity<>(headers, HttpMethod.GET, URI.create(externalApiUrl));
+    CompletableFuture<String> futureResponse = new CompletableFuture<>();
 
+    // Submit request to rate-limited queue
+    mangaDexRateLimiterService.processRequest(
+        () -> {
+          try {
+            String response = restTemplate.exchange(requestEntity, String.class).getBody();
+            futureResponse.complete(response); // Complete the future with the response
+          } catch (Exception e) {
+            futureResponse.completeExceptionally(e); // Handle exceptions properly
+          }
+        });
+
+    try {
+      // Block and wait for the response from the queued task
+      return futureResponse.get();
+    } catch (InterruptedException | ExecutionException e) {
+      return "Error processing request.";
+    }
     // Make the request
-    return restTemplate.exchange(requestEntity, String.class).getBody();
+    // return restTemplate.exchange(requestEntity, String.class).getBody();
   }
 
   @GetMapping("/manga-by-author")
@@ -718,6 +1008,7 @@ public class MangaDex {
       @RequestParam(value = "limit", required = true) Number limit,
       @RequestParam(value = "offset", required = true) Number offset,
       @RequestParam(value = "contentFilter", required = false) Number contentFilter) {
+
     String externalApiUrl = "";
     int contentFilterValue = contentFilter.intValue();
     switch (contentFilterValue) {
@@ -781,13 +1072,32 @@ public class MangaDex {
     // Create a RequestEntity with headers
     RequestEntity<Object> requestEntity =
         new RequestEntity<>(headers, HttpMethod.GET, URI.create(externalApiUrl));
+    CompletableFuture<String> futureResponse = new CompletableFuture<>();
 
+    // Submit request to rate-limited queue
+    mangaDexRateLimiterService.processRequest(
+        () -> {
+          try {
+            String response = restTemplate.exchange(requestEntity, String.class).getBody();
+            futureResponse.complete(response); // Complete the future with the response
+          } catch (Exception e) {
+            futureResponse.completeExceptionally(e); // Handle exceptions properly
+          }
+        });
+
+    try {
+      // Block and wait for the response from the queued task
+      return futureResponse.get();
+    } catch (InterruptedException | ExecutionException e) {
+      return "Error processing request.";
+    }
     // Make the request
-    return restTemplate.exchange(requestEntity, String.class).getBody();
+    // return restTemplate.exchange(requestEntity, String.class).getBody();
   }
 
   @GetMapping("/chapter-data")
   public String fetchChapterData(@RequestParam(value = "id", required = true) String id) {
+
     String externalApiUrl = "https://api.mangadex.org/at-home/server/" + id;
     // Create HttpHeaders and set the User-Agent header
     HttpHeaders headers = new HttpHeaders();
@@ -796,13 +1106,33 @@ public class MangaDex {
     // Create a RequestEntity with headers
     RequestEntity<Object> requestEntity =
         new RequestEntity<>(headers, HttpMethod.GET, URI.create(externalApiUrl));
+    CompletableFuture<String> futureResponse = new CompletableFuture<>();
 
+    // Submit request to rate-limited queue
+    mangaDexRateLimiterService.processRequest(
+        () -> {
+          try {
+            String response = restTemplate.exchange(requestEntity, String.class).getBody();
+            futureResponse.complete(response); // Complete the future with the response
+          } catch (Exception e) {
+            futureResponse.completeExceptionally(e); // Handle exceptions properly
+          }
+        });
+
+    try {
+      // Block and wait for the response from the queued task
+      return futureResponse.get();
+    } catch (InterruptedException | ExecutionException e) {
+      return "Error processing request.";
+    }
     // Make the request
-    return restTemplate.exchange(requestEntity, String.class).getBody();
+    // return restTemplate.exchange(requestEntity, String.class).getBody();
+
   }
 
   @GetMapping("/chapter-details")
   public String fetchChapterDetails(@RequestParam(value = "id", required = true) String id) {
+
     String externalApiUrl =
         "https://api.mangadex.org/chapter/" + id + "?includes[]=scanlation_group";
     // Create HttpHeaders and set the User-Agent header
@@ -811,22 +1141,57 @@ public class MangaDex {
     // Create a RequestEntity with headers
     RequestEntity<Object> requestEntity =
         new RequestEntity<>(headers, HttpMethod.GET, URI.create(externalApiUrl));
-    // Make the request
-    return restTemplate.exchange(requestEntity, String.class).getBody();
+    CompletableFuture<String> futureResponse = new CompletableFuture<>();
+
+    // Submit request to rate-limited queue
+    mangaDexRateLimiterService.processRequest(
+        () -> {
+          try {
+            String response = restTemplate.exchange(requestEntity, String.class).getBody();
+            futureResponse.complete(response); // Complete the future with the response
+          } catch (Exception e) {
+            futureResponse.completeExceptionally(e); // Handle exceptions properly
+          }
+        });
+
+    try {
+      // Block and wait for the response from the queued task
+      return futureResponse.get();
+    } catch (InterruptedException | ExecutionException e) {
+      return "Error processing request.";
+    } // Make the request
+    // return restTemplate.exchange(requestEntity, String.class).getBody();
   }
 
   @GetMapping("/cover-image")
   public ResponseEntity<byte[]> fetchCoverImage(
       @RequestParam(value = "id", required = true) String id,
       @RequestParam(value = "fileName", required = true) String fileName) {
+
     String externalApiUrl = "https://uploads.mangadex.org/covers/" + id + "/" + fileName;
-    // Create HttpHeaders and set the User-Agent header
     HttpHeaders headers = new HttpHeaders();
     headers.add("User-Agent", "ink-paradise");
-    // Create a RequestEntity with headers
     RequestEntity<Object> requestEntity =
         new RequestEntity<>(headers, HttpMethod.GET, URI.create(externalApiUrl));
-    // Make the request
+    CompletableFuture<ResponseEntity<byte[]>> futureResponse = new CompletableFuture<>();
+
+    // Submit request to rate-limited queue
+    mangaDexRateLimiterService.processRequest(
+        () -> {
+          try {
+            ResponseEntity<byte[]> response = restTemplate.exchange(requestEntity, byte[].class);
+            futureResponse.complete(response); // Complete the future with the response
+          } catch (Exception e) {
+            futureResponse.completeExceptionally(e); // Handle exceptions properly
+          }
+        });
+
+    try {
+      // Block and wait for the response from the queued task
+      return futureResponse.get();
+    } catch (InterruptedException | ExecutionException e) {
+      System.out.println("Error processing request.");
+    }
     return restTemplate.exchange(requestEntity, byte[].class);
   }
 
@@ -834,14 +1199,31 @@ public class MangaDex {
   public ResponseEntity<byte[]> fetchPageImage(
       @RequestParam(value = "hash", required = true) String hash,
       @RequestParam(value = "page", required = true) String page) {
+
     String externalApiUrl = "https://uploads.mangadex.org/data/" + hash + "/" + page;
-    // Create HttpHeaders and set the User-Agent header
     HttpHeaders headers = new HttpHeaders();
     headers.add("User-Agent", "ink-paradise");
-    // Create a RequestEntity with headers
     RequestEntity<Object> requestEntity =
         new RequestEntity<>(headers, HttpMethod.GET, URI.create(externalApiUrl));
-    // Make the request
+    CompletableFuture<ResponseEntity<byte[]>> futureResponse = new CompletableFuture<>();
+
+    // Submit request to rate-limited queue
+    mangaDexRateLimiterService.processRequest(
+        () -> {
+          try {
+            ResponseEntity<byte[]> response = restTemplate.exchange(requestEntity, byte[].class);
+            futureResponse.complete(response); // Complete the future with the response
+          } catch (Exception e) {
+            futureResponse.completeExceptionally(e); // Handle exceptions properly
+          }
+        });
+
+    try {
+      // Block and wait for the response from the queued task
+      return futureResponse.get();
+    } catch (InterruptedException | ExecutionException e) {
+      System.out.println("Error processing request.");
+    }
     return restTemplate.exchange(requestEntity, byte[].class);
   }
 }
